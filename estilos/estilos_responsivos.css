@@ -1,0 +1,48 @@
+@media only screen and (max-width:1378px){
+    /*dashboard*/
+	#botconfechas {
+        padding-block: calc(var(--spacing) * 1);
+    }
+}
+@media only screen and (max-width:1006px){
+    /*generales*/
+    .c15, .c20{
+        width: 40% !important;
+    }
+}
+@media only screen and (max-width:930px){   
+    .menu_bar label{
+        margin-top: 20px !important;
+    }
+}
+@media only screen and (max-width:918px){   
+    /*principal*/
+    .titulo_head{
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+    }
+}
+@media only screen and (max-width:814px){  
+    .menu_bar{
+        padding-top: 56px;
+    }
+} 
+@media only screen and (max-width:640px){   
+    header div:nth-child(1), header div:nth-child(2){
+        width: 50% !important;
+        text-align: center;
+    }
+    header div:nth-child(3){
+        display: none;
+    }
+    .menu-bar{
+        padding-top: 30px !important;
+    }
+}
+@media only screen and (max-width:580px){   
+    /*generales*/
+    .c15, .c20{
+        width: 100% !important;
+    }
+}
