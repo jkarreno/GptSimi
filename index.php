@@ -13,7 +13,7 @@
 		<link rel="icon" href="images/dashboard.png" type="image/png">
 	</head>
 	<body style="background: url('images/<?php echo rand(1,10);?>.png') no-repeat; background-size: cover; background-position: top center;">
-		<video autoplay="" muted="" loop="" playsinline="" controlslist="nodownload" src="../helpdesk/video/Design - 48420.mp4" type="video/mp4" id="video_background" preload="auto" volume="50">
+		<video autoplay="" muted="" loop="" playsinline="" controlslist="nodownload" src="https://gptecnologia.com.mx/helpdesk/video/Design - 48420.mp4" type="video/mp4" id="video_background" preload="auto" volume="50">
 		</video>
 		<div class="centrado_logo">
 			<h2>&nbsp;</h2>

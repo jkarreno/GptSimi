@@ -1,0 +1,21 @@
+name: gptsimi
+
+recipe: lamp
+
+config:
+
+  php: '7.3'
+
+  webroot: .
+
+  database: mysql:8.0
+
+services:
+
+  database:
+    portforward: 3306
+
+proxy:
+
+  appserver:
+    - gptsimi.lndo.site
