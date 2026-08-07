@@ -1,9 +1,9 @@
 <?php
 //session_start();
 
-include ('apps/conexion.php');
+include ('conexion.php');
 
-require 'vendor/autoload.php';
+//require 'vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

@@ -1,0 +1,23 @@
+#carpeta imagenes
+/images
+
+#carpeta ads
+/ads
+
+#archivos error.log
+error_log
+
+# capeta todo
+TODO 
+
+#Visual Studio Code
+.vscode/
+
+#carpeta well-know
+.well-known/
+
+#vendor
+vendor/
+
+#db backups
+*.sql
