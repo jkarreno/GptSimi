@@ -2,10 +2,8 @@
 ob_start();
 session_start(); 
 //conecto con la base de datos 
-include('apps/conexion.php');
-include ('funciones.php');
-
-escribirLog("Intento de inicio de sesión con el usuario: ".$_POST["user"]." y la contraseña: ".$_POST["pass"]);
+include('conexion.php');
+//include ('funciones.php');
 
 //Sentencia SQL para buscar un usuario con esos datos 
 $ssql = "SELECT * FROM usuarios WHERE Usuario='".$_POST["user"]."' and Contrasenna='".md5($_POST["pass"])."'"; 
@@ -23,19 +21,13 @@ if (mysqli_num_rows($rs)!=0){
     
     //session_register("autentificado"); 
     $_SESSION["autentificado"] = "SI"; 
-    $_SESSION["perfil"] = $Rowrs["Perfil"];
+    //$_SESSION["perfil"] = $Rowrs["Perfil"];
     $_SESSION["nombre"] = $Rowrs["Nombre"];
     $_SESSION["Id"] = $Rowrs["Id"];
-    $_SESSION["compani"] = $Rowrs["Compani"];
     $_SESSION["usuario"] = $Rowrs["Usuario"];
  //    sesion_register("usuario");
 //    $usuario = $username;
 
-    //bitacora
-   mysqli_query($conn, "INSERT INTO bitacora (FechaHora, IdUser, Hizo, Compani) VALUES ('".time()."', '".$_SESSION["Id"]."', '1', '".$_SESSION["compani"]."')");
-
-   escribirLog("Inicio de sesión exitoso para el usuario: ".$_SESSION["usuario"]);
-	
     header ("Location: principal.php"); 
 	
 }else { 
@@ -48,9 +40,9 @@ ob_end_flush();
 ?> 
 
 <?php
-//Created with human intelligence by @jkarreno 2023 - 2024
+//Created with human intelligence by @jkarreno 2026
 //May the force be with you
 //move your stars
-//always ready
+//be prepared
 ?>
 

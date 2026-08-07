@@ -240,8 +240,8 @@ function helpdesk(){
 	});
 }
 
-function logout(compani){
-	window.location.href = 'logout.php?f=' + compani;
+function logout(){
+	window.location.href = 'logout.php';
 }
 
 
