@@ -21,3 +21,6 @@ vendor/
 
 #db backups
 *.sql
+
+#variables de entorno
+.env
