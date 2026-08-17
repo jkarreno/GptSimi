@@ -7,6 +7,19 @@ include("../funciones.php");
 
 $mensaje='';
 
+if(isset($_POST["hacer"]))
+{
+    //agregar usuario
+    if($_POST["hacer"]=='addusuario')
+    {
+        mysqli_query($conn, "INSERT INTO usuarios (Nombre, Telefono, CorreoE, Usuario, Contrasenna, Perfil) 
+                                            VALUES('".$_POST["nombre"]."', '".$_POST["telefono"]."', '".$_POST["correoe"]."', 
+                                                    '".$_POST["usuario"]."', '".md5($_POST["contrasena"])."', '".$_POST["perfil"]."')") or die(mysqli_error($conn));
+
+        $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el usuario '.$_POST["nombre"].'</div>';
+    }
+}
+
 $cadena=$mensaje.'<div class="c100 card agc ber bff bfz">
             <h2><i class="ri-group-2-fill"></i> Usuarios</h2>
             <table id="table_usuarios" class="stripe row-border order-column nowrap">
@@ -63,6 +76,7 @@ $(document).ready( function () {
                 }
             },
             <?php endif; ?>
+            <?php if(permisos($_SESSION["perfil"], 'add.usuario')): ?>
             {
                 text: 'Agregar Usuario',
                 action: function ( e, dt, node, config ) {
@@ -71,14 +85,7 @@ $(document).ready( function () {
                     agregar_usuario();
                 }
             },
-            {
-                text: 'Enviar Mensaje',
-                action: function ( e, dt, node, config ) {
-                    limpiar();
-                    abrirmodal();
-                    mensaje_usuarios();
-                }
-            }
+            <?php endif; ?>
         ],
         paging: false
     });

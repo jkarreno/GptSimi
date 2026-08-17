@@ -1,0 +1,5 @@
+ALTER TABLE `usuarios`
+	ADD COLUMN `Telefono` VARCHAR(20
+) NULL DEFAULT NULL AFTER `Nombre`,
+	ADD COLUMN `CorreoE` VARCHAR(250
+) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci' AFTER `Telefono`;
