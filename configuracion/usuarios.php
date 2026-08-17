@@ -23,6 +23,23 @@ $cadena=$mensaje.'<div class="c100 card agc ber bff bfz">
                     </tr>
                 </thead>
                 <tbody>';
+$ResUsuarios = mysqli_query($conn, "SELECT u.Id, u.Nombre, u.Usuario, p.Nombre AS NombrePerfil
+                                    FROM usuarios AS u
+                                    INNER JOIN perfiles AS p ON u.Perfil = p.Id
+                                    ORDER BY u.Nombre ASC");
+while($RResU=mysqli_fetch_array($ResUsuarios))
+{
+    $cadena.='      <tr>
+                        <td align="center">'.$RResU["Id"].'</td>
+                        <td><a href="javascript:void(0)" onclick="limpiar();abrirmodal();edit_usuario(\''.$RResU["Id"].'\')">'.$RResU["Nombre"].'</a></td>
+                        <td>'.$RResU["Usuario"].'</td>
+                        <td>'.$RResU["NombrePerfil"].'</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>';
+}
 $cadena.='      </tbody>
             </table>
         </div>';
@@ -39,12 +56,13 @@ $(document).ready( function () {
         },
         dom: 'Bfrtip',
         buttons: [
-            {
+            <?php if(permisos($_SESSION["perfil"], 'ver.perfiles')): ?>{
                 text: 'Perfiles',
                 action: function ( e, dt, node, config ) {
                     perfiles();
                 }
             },
+            <?php endif; ?>
             {
                 text: 'Agregar Usuario',
                 action: function ( e, dt, node, config ) {

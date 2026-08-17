@@ -3,7 +3,7 @@
 session_start();
 
 include('../conexion.php');
-//include('../funciones.php');
+include('../funciones.php');
 
 $mensaje='';
 
@@ -12,7 +12,7 @@ $cadena='<div class="c100">
                 <ul>
 					<li><a href="#" onclick="financieras()" class = "mytooltip"><i class="ri-bank-fill"></i><span class = "mytext">Financieras</span></a></li>
                     <li><a href="#" onclick="empresas()" class = "mytooltip"><i class="ri-building-4-fill"></i><span class = "mytext">Empresas</span></a></li>
-                    <li><a href="#" onclick="usuarios()" class = "mytooltip"><i class="ri-group-2-fill"></i><span class = "mytext">Usuarios</span></a></li>
+                    '.(permisos($_SESSION["perfil"], 'ver.usuarios')==TRUE ? '<li><a href="#" onclick="usuarios()" class = "mytooltip"><i class="ri-group-2-fill"></i><span class = "mytext">Usuarios</span></a></li>' : '').'
                     <li><a href="#" onclick="promotores()" class = "mytooltip"><i class="ri-user-voice-fill"></i><span class = "mytext">Promotores</span></a></li>
                 </ul>
             </div>
