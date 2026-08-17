@@ -12,15 +12,14 @@ if ($_SESSION["autentificado"] != "SI") {
     exit(); 
 } 
 
-include ("apps/conexion.php");
+include ("conexion.php");
 include ("funciones.php");
 
-$ResC=mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM companies WHERE Id = '".$_SESSION["compani"]."'"))
 ?>
 <html lang="es-mx">
 <head>
 	<meta charset="UTF-8" />
-	<title>Mesa de control</title>
+	<title>Panel de control</title>
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 		
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -60,31 +59,25 @@ $ResC=mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM companies WHERE Id =
 	
 	<script src="js/codigo.js"></script>
 
-	<?php if($_SESSION["perfil"]==4){echo '<script src="js/codigo_dashboard.js"></script>';}?>
+	<script src="js/codigo_dashboard.js"></script>
 
 	<link rel="icon" href="images/dashboard.png" type="image/png">
 </head>
-<body onload="<?php 
-				if($_SESSION["perfil"]==1){echo 'dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\');';}
-				elseif($_SESSION["perfil"]==2){echo 'dashboard_p(\''.$_SESSION["Id"].'\');';}
-				elseif($_SESSION["perfil"]==3){echo 'dashboard_i(\''.$_SESSION["Id"].'\');';} 
-				elseif($_SESSION["perfil"]==4){echo 'creditos();';}
-				elseif($_SESSION["perfil"]==8){echo 'dashboard_broxel(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\');';}?> ini('<?php echo $_SESSION["compani"];?>'); diade()" onkeypress="parar('<?php echo $_SESSION["compani"];?>')" onclick="parar('<?php echo $_SESSION["compani"];?>')">
+<body onload="ini(); diade()" onkeypress="parar()" onclick="parar()">
 
 	<input type="checkbox" id="check">
 	<header class="" style="background-color: #000; border-bottom: 1px solid #000;">
 		<div class="relative flex h-16 items-center justify-between">
 			<div id="logotop" class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-				<div class="menu_bar"><label for="check" id="chk_btn"><img src="images/<?php echo $ResC["Logo"];?>" border="0"></label></div>
-				<?php if($_SESSION["perfil"]==8){?><div class="menu_bar"><label for="check" id="chk_btn"><img src="images/logo_broxel.png" border="0"></label></div><?php } ?>
+				<div class="menu_bar"><label for="check" id="chk_btn"><img src="images/logotrans.png" border="0"></label></div>
 			</div>
 		</div>
-		<div class="titulo_head"><h2>Mesa de Control</h2></div>
-		<div class="logo_img"><!--<img src="images/xmas-gifts.png" >--> Bienvenido <?php echo $_SESSION["nombre"];?> <!--<i class="ri-notification-fill" style="cursor: pointer" onclick="notificaciones()"></i><span class="notificaciones" onclick="notificaciones()" id="notificacionesp"><?php echo notificaciones();?></span>--></div>
+		<div class="titulo_head"><h2>Panel de Control</h2></div>
+		<div class="logo_img">Bienvenido <?php echo $_SESSION["nombre"];?></div>
 	</header>
 
 	<div class="menu_principal">
-		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\')"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
+		<!--<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\')"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
 		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard_broxel()"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
 		<div class="tooltip top" onclick="solvexpress()"><a href="#"><img src="images/express.png" border="0" /></a><span class="tiptext">Express</span></div>
 		<div class="tooltip top" onclick="leads()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
@@ -93,12 +86,15 @@ $ResC=mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM companies WHERE Id =
 		<div><a href="#" onclick="pedidos();"><i class="fa-solid fa-boxes-stacked"></i></a></div>
 		<div class="tooltip top" onclick="creditos()"><a href="#"><i class="ri-money-dollar-box-line"></i></a><span class="tiptext">Créditos</span></div>
 		<div class="tooltip top" onclick="creditos_broxel()"><a href="#"><i class="ri-money-dollar-box-line"></i></a><span class="tiptext">Créditos</span></div>
-		<div class="tooltip top" onclick="configuracion()"><a href="#"><i class="ri-settings-3-line"></i></a><span class="tiptext">Configuración</span></div>
-		<div class="tooltip top" onclick="estadisticos()"><a href="#"><i class="ri-line-chart-line"></i></a><span class="tiptext">Indicadores</span></div>
+		-->
+		<?php if(permisos($_SESSION["perfil"], "configuracion")): ?>
+			<div class="tooltip top" onclick="configuracion()"><a href="#"><i class="ri-settings-3-line"></i></a><span class="tiptext">Configuración</span></div>
+		<?php endif; ?>
+		<!--<div class="tooltip top" onclick="estadisticos()"><a href="#"><i class="ri-line-chart-line"></i></a><span class="tiptext">Indicadores</span></div>
 		<div class="tooltip top" onclick="facturacion()"><a href="#"><i class="ri-article-line"></i></a><span class="tiptext">Facturación</span></div>
 		<div class="tooltip top" onclick="bitacora()"><a href="#"><i class="ri-git-repository-line"></i></a><span class="tiptext">Bitácora</span></div>
 		<div class="tooltip top" onclick="helpdesk()"><i class="ri-ticket-line"></i><span class="tiptext">Help Desk</span></div>
-		<div class="tooltip top" onclick="perfil()"><i class="ri-user-line"></i><span class="tiptext">perfil</span></div>
+		<div class="tooltip top" onclick="perfil()"><i class="ri-user-line"></i><span class="tiptext">perfil</span></div>-->
 		<div class="tooltip top" onclick="logout()"><i class="ri-logout-box-r-line"></i><span class="tiptext">Adios</span></div>
 	</div>
 

@@ -21,7 +21,7 @@ if (mysqli_num_rows($rs)!=0){
     
     //session_register("autentificado"); 
     $_SESSION["autentificado"] = "SI"; 
-    //$_SESSION["perfil"] = $Rowrs["Perfil"];
+    $_SESSION["perfil"] = $Rowrs["Perfil"];
     $_SESSION["nombre"] = $Rowrs["Nombre"];
     $_SESSION["Id"] = $Rowrs["Id"];
     $_SESSION["usuario"] = $Rowrs["Usuario"];
