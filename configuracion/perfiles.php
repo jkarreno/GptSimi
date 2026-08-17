@@ -15,7 +15,7 @@ if(isset($_POST["hacer"]))
         $ResPermisos = mysqli_query($conn, "SELECT Id FROM permisos ORDER BY Id ASC");
         while($RResP=mysqli_fetch_array($ResPermisos))
         {
-            if($_POST["per_".$RResP["Id"]]==1)
+            if(isset($_POST["per_".$RResP["Id"]]) && $_POST["per_".$RResP["Id"]]==1)
             {
                 $permisos.=$RResP["Id"].'|';
             }
