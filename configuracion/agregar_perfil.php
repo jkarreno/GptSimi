@@ -15,17 +15,17 @@ $cadena='<div class="c100 card">
 $ResPermisos=mysqli_query($conn, "SELECT Modulo FROM permisos GROUP BY Modulo ORDER BY Modulo ASC");
 while($RResPerm=mysqli_fetch_array($ResPermisos))
 {
-    $cadena.='<div class="c100">
+    $cadena.='<div class="c100" style="display: flex; flex-wrap: wrap;">
                     <h2>'.$RResPerm["Modulo"].'</h2>';
-    $ResFuncion=mysqli_query($conn, "SELECT * FROM permisos WHERE Modulo = '".$RResPerm["Modulo"]."' ORDER BY Nombre ASC");
+    $ResFuncion=mysqli_query($conn, "SELECT * FROM permisos WHERE Modulo = '".$RResPerm["Modulo"]."' ORDER BY Id ASC");
     while($RResFunc=mysqli_fetch_array($ResFuncion))
     {
         $cadena.='<div class="c30">
                     <label class="l_form">'.$RResFunc["Nombre"].':</label>
                     <ul class="tg-list">
                     <li class="tg-list-item">
-                        <input class="tgl tgl-light" id="'.$RResFunc["Id"].'" name="acc_'.$RResFunc["Id"].'" type="checkbox" value="1">
-                        <label class="tgl-btn" for="'.$RResFunc["Id"].'"></label>
+                        <input class="tgl tgl-light" id="per_'.$RResFunc["Id"].'" name="per_'.$RResFunc["Id"].'" type="checkbox" value="1">
+                        <label class="tgl-btn" for="per_'.$RResFunc["Id"].'"></label>
                     </li>
                     </ul>
                 </div>';
@@ -50,7 +50,7 @@ $("#fadperfil").on("submit", function(e){
 	var formData = new FormData(document.getElementById("fadperfil"));
 
 	$.ajax({
-		url: "mesacontrol/configuracion/usuarios/perfiles.php",
+		url: "configuracion/perfiles.php",
 		type: "POST",
 		dataType: "HTML",
 		data: formData,
@@ -64,8 +64,8 @@ $("#fadperfil").on("submit", function(e){
 </script>
 
 <?php
-//Created with human intelligence by @jkarreno 2023 - 2024
+//Created with human intelligence by @jkarreno 2026
 //May the force be with you
 //move your stars
-//always ready
+//be prepared
 ?>

@@ -1,0 +1,7 @@
+CREATE TABLE `perfiles` (
+	`Id` INT NOT NULL AUTO_INCREMENT,
+	`Nombre` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`Permisos` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	PRIMARY KEY (`Id`)
+)
+COLLATE='utf8mb4_0900_ai_ci';
