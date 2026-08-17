@@ -5,9 +5,9 @@ include ('conexion.php');
 
 //require 'vendor/autoload.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+//use PHPMailer\PHPMailer\PHPMailer;
+//use PHPMailer\PHPMailer\SMTP;
+//use PHPMailer\PHPMailer\Exception;
 
 function fecha($fecha)
 {
@@ -211,164 +211,6 @@ function deleteAllFilesInFolder($folderPath) {
     }
 }
 
-function leads($empresa)
-{
-	$cadena='<div class="c10 card_2" onclick="leads_mpio_dgo()" style="cursor: pointer;';if($empresa==1){$cadena.=' background-color: #0d2240;';}$cadena.='">
-                <h2 class="revclientes">Municipio de Durango</h2>
-            </div>
-            <div class="c10 card_2" onclick="leads_mpio_ahome()" style="cursor: pointer;';if($empresa==9){$cadena.=' background-color: #0d2240;';}$cadena.='">
-                <h2 class="revclientes">Municipio de AHOME</h2>
-            </div>
-            <div class="c10 card_2" onclick="leads_edo_qroo()" style="cursor: pointer;';if($empresa==16){$cadena.=' background-color: #0d2240;';}$cadena.='">
-                <h2 class="revclientes">Estado de Quintana Roo</h2>
-            </div>
-            <div class="c10 card_2" onclick="leads_edo_son()" style="cursor: pointer;';if($empresa==21){$cadena.=' background-color: #0d2240;';}$cadena.='">
-                <h2 class="revclientes">Estado de Sonora</h2>
-            </div>
-            <div class="c10 card_2" onclick="leads_mati()" style="cursor: pointer;';if($empresa==25){$cadena.=' background-color: #0d2240;';}$cadena.='">
-                <h2 class="revclientes">Municipio de Atizapan</h2>
-            </div>';
-
-	return $cadena;
-}
-
-function generarCorreoAleatorio($dominio) {
-    $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    $longitud = 10;
-    $correo = '';
-    
-    for ($i = 0; $i < $longitud; $i++) {
-        $correo .= $caracteres[rand(0, strlen($caracteres) - 1)];
-    }
-    
-    return $correo . '@' . $dominio;
-}
-
-function enviar_notificacion($idnotificacion, $perfiles, $idcliente=NULL)
-{
-    global $conn;
-    
-    switch($idnotificacion)
-    {
-        case 1: 
-            $subject = 'Nuevo lead registrado';
-            $cuerpo = 'Espera que el promotor complete la información.'; 
-            $idc = 'IdLead';
-            break;
-        case 2:
-            $subject = 'Documentos enviados';
-            $cuerpo = 'Un cliente ha validado documentos.'; 
-            $idc = 'IdLead';
-            break;
-        case 3:
-            $ResL = mysqli_fetch_array(mysqli_query($conn, "SELECT CONCAT(Nombre, ' ', Apellidos, ' ', Apellidosdos) AS Cliente FROM leads WHERE Id = '".$idcliente."' LIMIT 1"));
-            $subject = 'Cliente validado';
-            $cuerpo = 'El cliente '.$ResL["Cliente"].' ha sido validado por Recursos Humanos.'; 
-            $idc = 'IdLead';
-            break;
-        case 4:
-            $ResL = mysqli_fetch_array(mysqli_query($conn, "SELECT CONCAT(Nombre, ' ', Apellidos, ' ', Apellidosdos) AS Cliente FROM leads WHERE Id = '".$idcliente."' LIMIT 1"));
-            $subject = 'Servicio Seleccionado';
-            $cuerpo = 'El cliente '.$ResL["Cliente"].' ha seleccionado el servicio de interes.'; 
-            $idc = 'IdLead';
-            break;
-        case 5:
-            $ResL = mysqli_fetch_array(mysqli_query($conn, "SELECT CONCAT(Nombre, ' ', Apellidos, ' ', Apellidosdos) AS Cliente FROM leads WHERE Id = '".$idcliente."' LIMIT 1"));
-            $subject = 'Propuesta Enviada';
-            $cuerpo = 'Se enviaron las propuestas para el cliente '.$ResL["Cliente"].'.'; 
-            $idc = 'IdLead';
-            break;
-        case 6:
-            $ResL = mysqli_fetch_array(mysqli_query($conn, "SELECT CONCAT(Nombre, ' ', Apellidos, ' ', Apellidosdos) AS Cliente FROM leads WHERE Id = '".$idcliente."' LIMIT 1"));
-            $subject = 'Propuesta Aceptada';
-            $cuerpo = 'El cliente '.$ResL["Cliente"].' ha aceptado la propuesta.'; 
-            $idc = 'IdLead';
-            break;
-        case 7:
-            $ResL = mysqli_fetch_array(mysqli_query($conn, "SELECT CONCAT(Nombre, ' ', Apellidos, ' ', Apellidosdos) AS Cliente FROM leads WHERE Id = '".$idcliente."' LIMIT 1"));
-            $subject = 'Contrato Listo';
-            $cuerpo = 'La liga del contrato esta lista para el cliente '.$ResL["Cliente"].'.'; 
-            $idc = 'IdLead';
-            break;
-    }
-
-    $mail = new PHPMailer(true);
-
-    try {
-        $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host = 'localhost';
-        $mail->SMTPAuth = false;
-        $mail->SMTPAutoTLS = false;                                   //Enable SMTP authentication
-        $mail->Port       = 25;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-        //$mail->Host = 'email-smtp.us-east-1.amazonaws.com';
-        //$mail->SMTPAuth = true;
-        //$mail->Username = 'AKIAXYKJWMQT473X43XY';
-        //$mail->Password = 'BGw2p6wzsmZZohX9Xo88ICLUw7Jl8TNwY54TF83P2fQg';
-        //$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        //$mail->Port = 587;
-        
-        //Recipients
-        $mail->setFrom('juan.carreno@whitefish.mx', 'Mesa de Control');
-
-        if (is_array($perfiles))
-        {
-            foreach($perfiles AS $perfil)
-            {
-                $ResPerfiles = mysqli_query($conn, "SELECT Id, Nombre, CorreoE FROM usuarios WHERE Perfil = '".$perfil."' AND Compani ='".$_SESSION["compani"]."'");
-                while($RResP = mysqli_fetch_array($ResPerfiles))
-                {
-                    if($RResP["CorreoE"]!=NULL)
-                    {
-                        $mail->addAddress($RResP["CorreoE"], $RResP["Nombre"]);//Add a recipient 
-                    }
-
-                    //insertamos en base de datos
-                    mysqli_query($conn, "INSERT INTO notificaciones (IdUsuario, ".$idc.", Titulo, Mensaje, Fecha, Estatus, Compani) 
-                                                VALUES ('".$RResP["Id"]."', '".$idcliente."', '".$subject."', '".$cuerpo."', '".time()."', '0', '".$_SESSION["compani"]."')");
-                }
-            }
-        }
-        else {
-            $ResUsuario=mysqli_fetch_array(mysqli_query($conn, "SELECT Nombre, CorreoE, IdUsuario FROM Promotores WHERE Id='".$perfiles."' LIMIT 1"));
-
-            $mail->addAddress($ResUsuario["CorreoE"], $ResUsuario["Nombre"]);//Add a recipient 
-
-            //insertamos en base de datos
-            mysqli_query($conn, "INSERT INTO notificaciones (IdUsuario, ".$idc.", Titulo, Mensaje, Fecha, Estatus, Compani) 
-                                                    VALUES ('".$ResUsuario["IdUsuario"]."', '".$idcliente."', '".$subject."', '".$cuerpo."', '".time()."', '0', '".$_SESSION["compani"]."')");
-        }
-
-        
-       
-    
-        $mail->isHTML(true);                                  //Set email format to HTML
-        $mail->Subject = $subject;
-        $mail->Body    = $cuerpo;
-
-        if($mail->send())
-        {
-            $respuesta.='1. Message has been sent';
-        }
-        else{
-            $respuesta.='1.1. Menssage not sent';
-        }
-        
-    } catch (Exception $e) {
-        $respuesta="2. Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-    }
-
-    return $respuesta;
-}
-function notificaciones()
-{
-    //session_start(); 
-    global $conn;
-
-    $numnot=mysqli_num_rows(mysqli_query($conn, "SELECT * FROM notificaciones WHERE IdUsuario = '".$_SESSION["Id"]."' AND Estatus = '0'"));
-
-    return $numnot;
-}
-
 function generarCodigoAleatorio() {
     $caracteres = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $codigo = '';
@@ -389,65 +231,27 @@ function esJson($string) {
     return (json_last_error() === JSON_ERROR_NONE);
 }
 
-function calcularEdad($valor) {
-    // Validar longitud mínima para extraer la fecha
-    if (strlen($valor) < 10) {
-        return 0;
-    }
-
-    // Extraer la fecha de nacimiento (caracteres 5 al 10)
-    $fecha = substr($valor, 4, 6);
-
-    // Separar año, mes y día
-    $anio = substr($fecha, 0, 2);
-    $mes = substr($fecha, 2, 2);
-    $dia = substr($fecha, 4, 2);
-
-    // Validar mes y día
-    if (!is_numeric($anio) || !is_numeric($mes) || !is_numeric($dia)) {
-        return 0;
-    }
-
-    if ((int)$mes < 1 || (int)$mes > 12 || (int)$dia < 1 || (int)$dia > 31) {
-        return 0;
-    }
-
-    // Determinar el siglo
-    $anioCompleto = ($anio >= date('y')) ? '19' . $anio : '20' . $anio;
-
-    // Verificar que la fecha sea válida
-    if (!checkdate((int)$mes, (int)$dia, (int)$anioCompleto)) {
-        return 0;
-    }
-
-    // Crear objetos de fecha
-    $fechaNacimientoObj = date_create($anioCompleto . '-' . $mes . '-' . $dia);
-    if (!$fechaNacimientoObj) {
-        return 0;
-    }
-
-    $hoy = date_create();
-
-    // Calcular la diferencia
-    $diferencia = date_diff($fechaNacimientoObj, $hoy);
-
-    return (int)$diferencia->format('%y');
-}
-
-function escribirLog($mensaje)
+function permisos($perfil, $key)
 {
-    $archivo = __DIR__ . '/logs/debug_solveshop_'.date("Ymd").'.log';
+    if($perfil == 1) {
+        return true; // El perfil 1 tiene todos los permisos
+    }
 
-    $fecha = date('Y-m-d H:i:s');
+    else {
+        include('conexion.php');
 
-    file_put_contents(
-        $archivo,
-        "[{$fecha}] {$mensaje}" . PHP_EOL,
-        FILE_APPEND
-    );
+        $sql = "";
+        $result = mysqli_query($conn, $sql);
+
+        if (mysqli_num_rows($result) > 0) {
+            return true; // El perfil tiene el permiso
+        } else {
+            return false; // El perfil no tiene el permiso
+        }
+    }
 }
 
-//Created with human intelligence by @jkarreno 2023 - 2024 - 2025 - 2026
+//Created with human intelligence by @jkarreno 2026
 //May the force be with you
 //move your stars
 //be prepared
