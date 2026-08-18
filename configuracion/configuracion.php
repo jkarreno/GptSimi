@@ -10,10 +10,8 @@ $mensaje='';
 $cadena='<div class="c100">
             <div class="menucard">
                 <ul>
-					<li><a href="#" onclick="financieras()" class = "mytooltip"><i class="ri-bank-fill"></i><span class = "mytext">Financieras</span></a></li>
-                    <li><a href="#" onclick="empresas()" class = "mytooltip"><i class="ri-building-4-fill"></i><span class = "mytext">Empresas</span></a></li>
+					'.(permisos($_SESSION["perfil"], 'ver.sucursales')==TRUE ? '<li><a href="#" onclick="sucursales()" class = "mytooltip"><i class="ri-building-4-fill"></i><span class = "mytext">Sucursales</span></a></li>' : '').'
                     '.(permisos($_SESSION["perfil"], 'ver.usuarios')==TRUE ? '<li><a href="#" onclick="usuarios()" class = "mytooltip"><i class="ri-group-2-fill"></i><span class = "mytext">Usuarios</span></a></li>' : '').'
-                    <li><a href="#" onclick="promotores()" class = "mytooltip"><i class="ri-user-voice-fill"></i><span class = "mytext">Promotores</span></a></li>
                 </ul>
             </div>
             <div id="contenido2" class="contenido2">
@@ -25,10 +23,10 @@ echo $cadena;
 
 ?>
 <script>
-function empresas(){
+function sucursales(){
 	$.ajax({
 				type: 'POST',
-				url : 'mesacontrol/configuracion/empresas/empresas.php'
+				url : 'configuracion/sucursales.php'
 	}).done (function ( info ){
 		$('#contenido2').html(info);
 	});
