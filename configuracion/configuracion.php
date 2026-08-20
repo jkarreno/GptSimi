@@ -10,7 +10,7 @@ $mensaje='';
 $cadena='<div class="c100">
             <div class="menucard">
                 <ul>
-					'.(permisos($_SESSION["perfil"], 'ver.sucursales')==TRUE ? '<li><a href="#" onclick="sucursales()" class = "mytooltip"><i class="ri-building-4-fill"></i><span class = "mytext">Sucursales</span></a></li>' : '').'
+					'.(permisos($_SESSION["perfil"], 'ver.sucursales')==TRUE ? '<li><a href="#" onclick="sucursales()" class = "mytooltip"><i class="fa-solid fa-store"></i><span class = "mytext">Sucursales</span></a></li>' : '').'
                     '.(permisos($_SESSION["perfil"], 'ver.usuarios')==TRUE ? '<li><a href="#" onclick="usuarios()" class = "mytooltip"><i class="ri-group-2-fill"></i><span class = "mytext">Usuarios</span></a></li>' : '').'
                 </ul>
             </div>
