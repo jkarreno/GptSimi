@@ -77,9 +77,11 @@ include ("funciones.php");
 	</header>
 
 	<div class="menu_principal">
-		<!--<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\')"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
-		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard_broxel()"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
-		<div class="tooltip top" onclick="solvexpress()"><a href="#"><img src="images/express.png" border="0" /></a><span class="tiptext">Express</span></div>
+		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\')"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
+		<?php if(permisos($_SESSION["perfil"], "ver.servicios")): ?>
+			<div class="tooltip top" onclick="servicios()"><i class="fa-solid fa-house-laptop"></i><span class="tiptext">Servicios</span></div>
+		<?php endif; ?>
+		<!--<div class="tooltip top" onclick="solvexpress()"><a href="#"><img src="images/express.png" border="0" /></a><span class="tiptext">Express</span></div>
 		<div class="tooltip top" onclick="leads()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
 		<div class="tooltip top" onclick="leads_broxel()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
 		<div class="tooltip top" onclick="clientes()"><a href="#"><i class="ri-group-3-line"></i></a><span class="tiptext">Clientes</span></div>
@@ -87,7 +89,7 @@ include ("funciones.php");
 		<div class="tooltip top" onclick="creditos()"><a href="#"><i class="ri-money-dollar-box-line"></i></a><span class="tiptext">Créditos</span></div>
 		<div class="tooltip top" onclick="creditos_broxel()"><a href="#"><i class="ri-money-dollar-box-line"></i></a><span class="tiptext">Créditos</span></div>
 		-->
-		<?php if(permisos($_SESSION["perfil"], "configuracion")): ?>
+		<?php if(permisos($_SESSION["perfil"], "ver.configuracion")): ?>
 			<div class="tooltip top" onclick="configuracion()"><a href="#"><i class="ri-settings-3-line"></i></a><span class="tiptext">Configuración</span></div>
 		<?php endif; ?>
 		<!--<div class="tooltip top" onclick="estadisticos()"><a href="#"><i class="ri-line-chart-line"></i></a><span class="tiptext">Indicadores</span></div>
