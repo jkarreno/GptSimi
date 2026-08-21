@@ -1,0 +1,2 @@
+ALTER TABLE `usuarios`
+	ADD COLUMN `Supervisor` INT NULL DEFAULT NULL AFTER `Perfil`;

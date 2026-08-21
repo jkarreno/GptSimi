@@ -12,9 +12,16 @@ if(isset($_POST["hacer"]))
     //agregar usuario
     if($_POST["hacer"]=='addusuario')
     {
-        mysqli_query($conn, "INSERT INTO usuarios (Nombre, Telefono, CorreoE, Usuario, Contrasenna, Perfil) 
+        //echo "INSERT INTO usuarios (Nombre, Telefono, CorreoE, Usuario, Contrasenna, Perfil, Supervisor) 
+        //                                    VALUES('".$_POST["nombre"]."', '".$_POST["telefono"]."', '".$_POST["correoe"]."', 
+        //                                            '".$_POST["usuario"]."', '".md5($_POST["contrasena"])."', '".$_POST["perfil"]."', 
+        //                                            '".$_POST["supervisor"]."')";
+        //die();
+
+        mysqli_query($conn, "INSERT INTO usuarios (Nombre, Telefono, CorreoE, Usuario, Contrasenna, Perfil, Supervisor) 
                                             VALUES('".$_POST["nombre"]."', '".$_POST["telefono"]."', '".$_POST["correoe"]."', 
-                                                    '".$_POST["usuario"]."', '".md5($_POST["contrasena"])."', '".$_POST["perfil"]."')") or die(mysqli_error($conn));
+                                                    '".$_POST["usuario"]."', '".md5($_POST["contrasena"])."', '".$_POST["perfil"]."', 
+                                                    '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el usuario '.$_POST["nombre"].'</div>';
     }
