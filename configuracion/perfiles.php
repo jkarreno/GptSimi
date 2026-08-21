@@ -25,6 +25,22 @@ if(isset($_POST["hacer"]))
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el perfil '.$_POST["nombre"].'</div>';
     }
+    //editar perfil
+    if($_POST["hacer"]=='editperfil')
+    {
+        $permisos='|';
+        $ResPermisos = mysqli_query($conn, "SELECT Id FROM permisos ORDER BY Id ASC");
+        while($RResP=mysqli_fetch_array($ResPermisos))
+        {
+            if(isset($_POST["per_".$RResP["Id"]]) && $_POST["per_".$RResP["Id"]]==1)
+            {
+                $permisos.=$RResP["Id"].'|';
+            }
+            
+        }
+        mysqli_query($conn, "UPDATE perfiles SET Nombre = '".$_POST["nombre"]."', Permisos = '".$permisos."' WHERE Id = '".$_POST["idperfil"]."'");
+        $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se actualizo el perfil '.$_POST["nombre"].'</div>';
+    }
 }
 
 $cadena=$mensaje.'<div class="c100 card">
@@ -45,9 +61,9 @@ while($RResPer=mysqli_fetch_array($ResPerfiles))
 {
     $cadena.='      <tr>
                         <td align="center">'.$J.'</td>
-                        <td><a href="javascript:void(0)" onclick="limpiar();abrirmodal();edit_perfil(\''.$RResPer["Id"].'\')">'.$RResPer["Nombre"].'</a></td>
+                        <td>'.(permisos($_SESSION["perfil"], 'edit.perfil') ? '<a href="javascript:void(0)" onclick="edit_perfil(\''.$RResPer["Id"].'\')">'.$RResPer["Nombre"].'</a>' : $RResPer["Nombre"]).'</td>
                         <td>'.($RResPer["Id"]==1 ? 'Todos' : 'Restringidos').'</td>
-                        <td><i class="fa-solid fa-pen-to-square"></i> <i class="fa-solid fa-trash"></i></td>
+                        <td>'.(permisos($_SESSION["perfil"], 'edit.perfil') ? '<i class="fa-solid fa-pen-to-square"></i>' : '').(permisos($_SESSION["perfil"], 'delete.perfil') ? ' <i class="fa-solid fa-trash"></i>' : '').'</td>
                     </tr>';
     $J++;
 }
@@ -91,6 +107,8 @@ function agregar_perfil(){
 }
 
 function edit_perfil(idperfil){
+    limpiar();
+    abrirmodal();
     $.ajax({
                 type: 'POST',
                 url : 'configuracion/editar_perfil.php',
