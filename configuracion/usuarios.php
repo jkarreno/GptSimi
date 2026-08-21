@@ -25,6 +25,20 @@ if(isset($_POST["hacer"]))
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el usuario '.$_POST["nombre"].'</div>';
     }
+
+    //editar usuario
+    if($_POST["hacer"]=='aeditusuario')
+    {
+        $sql="UPDATE usuarios SET Nombre='".$_POST["nombre"]."', Telefono='".$_POST["telefono"]."', CorreoE='".$_POST["correoe"]."', Usuario='".$_POST["usuario"]."', Perfil='".$_POST["perfil"]."', Supervisor='".$_POST["supervisor"]."'";
+        if($_POST["contrasena"]!='')
+        {
+            $sql.=", Contrasenna='".md5($_POST["contrasena"])."'";
+        }
+        $sql.=" WHERE Id='".$_POST["idusuario"]."'";
+        mysqli_query($conn, $sql) or die(mysqli_error($conn));
+
+        $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se edito el usuario '.$_POST["nombre"].'</div>';
+    }
 }
 
 $cadena=$mensaje.'<div class="c100 card agc ber bff bfz">
@@ -43,18 +57,27 @@ $cadena=$mensaje.'<div class="c100 card agc ber bff bfz">
                     </tr>
                 </thead>
                 <tbody>';
-$ResUsuarios = mysqli_query($conn, "SELECT u.Id, u.Nombre, u.Usuario, p.Nombre AS NombrePerfil
+$ResUsuarios = mysqli_query($conn, "SELECT 
+                                        u.Id,
+                                        u.Nombre,
+                                        u.Usuario,
+                                        p.Nombre AS NombrePerfil,
+                                        COALESCE(us.Nombre, '--') AS Supervisor
                                     FROM usuarios AS u
-                                    INNER JOIN perfiles AS p ON u.Perfil = p.Id
+                                    INNER JOIN perfiles AS p 
+                                        ON u.Perfil = p.Id
+                                    LEFT JOIN usuarios AS us 
+                                        ON u.Supervisor = us.Id
                                     ORDER BY u.Nombre ASC");
+
 while($RResU=mysqli_fetch_array($ResUsuarios))
 {
     $cadena.='      <tr>
                         <td align="center">'.$RResU["Id"].'</td>
-                        <td><a href="javascript:void(0)" onclick="limpiar();abrirmodal();edit_usuario(\''.$RResU["Id"].'\')">'.$RResU["Nombre"].'</a></td>
+                        <td>'.($RResU["Id"]!=1 ? (permisos($_SESSION["perfil"], 'edit.usuario') ? '<a href="javascript:void(0)" onclick="edit_usuario(\''.$RResU["Id"].'\')">'.$RResU["Nombre"].'</a>' : $RResU["Nombre"]) : $RResU["Nombre"]).'</td>
                         <td>'.$RResU["Usuario"].'</td>
                         <td>'.$RResU["NombrePerfil"].'</td>
-                        <td></td>
+                        <td>'.$RResU["Supervisor"].'</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -108,6 +131,8 @@ function agregar_usuario(){
 }
 
 function edit_usuario(idusuario){
+    limpiar();
+    abrirmodal();
     $.ajax({
 				type: 'POST',
 				url : 'configuracion/edit_usuario.php',
