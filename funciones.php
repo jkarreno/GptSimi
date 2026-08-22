@@ -240,10 +240,10 @@ function permisos($perfil, $key)
     else {
         include('conexion.php');
 
-        $sql = "";
-        $result = mysqli_query($conn, $sql);
+        $sql = "SELECT Id FROM permisos WHERE Key = '$key'";
+        $result = mysqli_fetch_array(mysqli_query($conn, $sql));
 
-        if (mysqli_num_rows($result) > 0) {
+        if (strpos($_SESSION["permisos"], '|' . $result['Id'] . '|') !== false) {
             return true; // El perfil tiene el permiso
         } else {
             return false; // El perfil no tiene el permiso
