@@ -15,17 +15,33 @@ if ($_SESSION["autentificado"] != "SI") {
 include ("../conexion.php");
 include ("../funciones.php");
 
-$ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT 
-                                            u.supervisor,
-                                            COUNT(s.TecnicoAsignado) AS total_servicios,
-                                            SUM(CASE WHEN s.Estatus <> 4 THEN 1 ELSE 0 END) AS servicios_asignados,
-                                            SUM(CASE WHEN s.Estatus = 4 THEN 1 ELSE 0 END) AS servicios_completados
-                                        FROM usuarios u
-                                        INNER JOIN servicios s 
-                                            ON s.TecnicoAsignado = u.id
-                                        WHERE u.perfil = 2
-                                            AND u.supervisor = '".$_SESSION["Id"]."'
-                                        GROUP BY u.supervisor;"));
+if($_SESSION["perfil"] == 3)
+{
+    $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT 
+                                                u.supervisor,
+                                                COUNT(s.TecnicoAsignado) AS total_servicios,
+                                                SUM(CASE WHEN s.Estatus <> 4 THEN 1 ELSE 0 END) AS servicios_asignados,
+                                                SUM(CASE WHEN s.Estatus = 4 THEN 1 ELSE 0 END) AS servicios_completados
+                                            FROM usuarios u
+                                            INNER JOIN servicios s 
+                                                ON s.TecnicoAsignado = u.id
+                                            WHERE u.perfil = 2
+                                                AND u.supervisor = '".$_SESSION["Id"]."'
+                                            GROUP BY u.supervisor;"));
+}
+elseif($_SESSION["perfil"] == 2)
+{
+    $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT 
+                                                COUNT(s.TecnicoAsignado) AS total_servicios,
+                                                SUM(CASE WHEN s.Estatus <> 4 THEN 1 ELSE 0 END) AS servicios_asignados,
+                                                SUM(CASE WHEN s.Estatus = 4 THEN 1 ELSE 0 END) AS servicios_completados
+                                            FROM usuarios u
+                                            INNER JOIN servicios s 
+                                                ON s.TecnicoAsignado = u.id
+                                            WHERE u.Id = '".$_SESSION["Id"]."'
+                                            GROUP BY u.Id;"));
+}
+
 
 ?>
 <html class="light" lang="es"><head>
@@ -185,13 +201,38 @@ $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT
 <!-- Technician Workload Section -->
 <section class="space-y-md">
 <div class="flex items-center justify-between">
-<h2 class="text-headline-md font-headline-md-mobile text-on-surface">Tecnicos en Servicio</h2>
+<h2 class="text-headline-md font-headline-md-mobile text-on-surface">
+    <?php if ($_SESSION["perfil"]==3) { echo "Tecnicos en Servicio"; } else if ($_SESSION["perfil"]==2) { echo "Mis Servicios"; } ?>
+</h2>
 
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
 <!-- Tech Card 1 -->
 <?php
-    $ResTecnicos = mysqli_query($conn, "SELECT 
+    if($_SESSION["perfil"] == 3)
+    {
+        $ResTecnicos = mysqli_query($conn, "SELECT 
+                                                u.Id,
+                                                u.Nombre,
+                                                COUNT(s.TecnicoAsignado) AS total_servicios,
+                                                SUM(CASE WHEN s.Estatus = 4 THEN 1 ELSE 0 END) AS servicios_completados,
+                                                ROUND(
+                                                    (SUM(CASE WHEN s.Estatus = 4 THEN 1 ELSE 0 END) / COUNT(s.TecnicoAsignado)) * 100,
+                                                    2
+                                                ) AS porcentaje_completado
+                                            FROM usuarios u
+                                            INNER JOIN servicios s ON s.TecnicoAsignado = u.Id
+                                            WHERE u.perfil = 2
+                                                AND u.supervisor = '".$_SESSION["Id"]."'
+                                            GROUP BY 
+                                                u.Id,
+                                                u.Nombre
+                                            HAVING COUNT(s.TecnicoAsignado) > 1
+                                            ORDER BY total_servicios DESC");
+    }
+    elseif($_SESSION["perfil"] == 2)
+    {
+        $ResTecnicos = mysqli_query($conn, "SELECT 
                                             u.Id,
                                             u.Nombre,
                                             COUNT(s.TecnicoAsignado) AS total_servicios,
@@ -202,20 +243,20 @@ $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT
                                             ) AS porcentaje_completado
                                         FROM usuarios u
                                         INNER JOIN servicios s ON s.TecnicoAsignado = u.Id
-                                        WHERE u.perfil = 2
-                                            AND u.supervisor = '".$_SESSION["Id"]."'
+                                        WHERE u.Id = '".$_SESSION["Id"]."'
                                         GROUP BY 
                                             u.Id,
                                             u.Nombre
                                         HAVING COUNT(s.TecnicoAsignado) > 1
                                         ORDER BY total_servicios DESC");
+    }
 
     while($RResT = mysqli_fetch_array($ResTecnicos))
     {
         echo '<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md relative">
-                <div class="absolute top-md right-md bg-tertiary-container text-on-tertiary px-xs py-1 rounded text-label-sm font-label-sm flex items-center gap-1">
+                '.($_SESSION["perfil"] == 3 ? '<div class="absolute top-md right-md bg-tertiary-container text-on-tertiary px-xs py-1 rounded text-label-sm font-label-sm flex items-center gap-1">
                     On Site
-                </div>
+                </div>' : '').'
                 <div class="flex items-center gap-sm">
                     <div>
                         <div class="text-label-bold font-label-bold text-on-surface">'.$RResT["Nombre"].'</div>
@@ -232,15 +273,20 @@ $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT
                     </div>
                 </div>
                 <button class="w-full h-12 bg-surface-container-low text-on-surface-variant text-label-bold font-label-bold rounded-lg hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-xs">
-                    <span class="material-symbols-outlined">assignment_ind</span> Asignar Servicio
+                    <span class="material-symbols-outlined">assignment_ind</span> '.($_SESSION["perfil"] == 3 ? "Asignar Servicio" : "Nuevo Servicio").'
                 </button>
             </div>';
-    }                            
+    }
+    if($_SESSION["perfil"] == 3)
+    {                            
 ?>
 <!-- Floating Action Button (+) -->
 <button onclick="agregar_servicio_pwa()" class="fixed right-container-margin bottom-24 w-14 h-14 bg-primary text-on-primary rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex items-center justify-center z-40 hover:opacity-90 transition-opacity">
 <span class="material-symbols-outlined fill text-[32px]">add</span>
 </button>
+<?php
+    }
+?>
 <!-- BottomNavBar -->
 <nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-16 px-base pb-safe bg-surface dark:bg-surface border-t border-outline-variant dark:border-outline md:hidden">
 <a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold scale-95 transition-transform duration-100" href="principal_pwa.php">
@@ -251,13 +297,20 @@ $ResTS = mysqli_fetch_array(mysqli_query($conn, "SELECT
 <span class="material-symbols-outlined">build_circle</span>
 <span class="text-label-sm font-label-sm">Servicios</span>
 </a>
+<?php
+    if($_SESSION["perfil"] == 3)
+    {
+?>
 <a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1" href="equipo_pwa.php">
 <span class="material-symbols-outlined">group</span>
 <span class="text-label-sm font-label-sm">Equipo</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1" href="profile_pwa.php">
-<span class="material-symbols-outlined">person</span>
-<span class="text-label-sm font-label-sm">Profile</span>
+<?php
+    }
+?>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1" href="../logout.php">
+<span class="material-symbols-outlined">Logout</span>
+<span class="text-label-sm font-label-sm">Salir</span>
 </a>
 </nav>
 </body></html>
