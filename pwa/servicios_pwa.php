@@ -49,6 +49,7 @@ if(isset($_POST["hacer"]))
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="../estilos/estilos.css" rel="stylesheet">
+<script src="codigo.js"></script>
 <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
@@ -234,13 +235,29 @@ if(isset($_POST["hacer"]))
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
 <!-- Card 1: In Progress -->
 <?php
-    $ResServicios = mysqli_query($conn, "SELECT s.Id, s.Sucursal, s.FechaAsignacion, s.SemanaAtencion, s.Estatus, s.TecnicoAsignado, s.Observaciones,
+    if($_SESSION["perfil"] == 3)
+    {
+        $ResServicios = mysqli_query($conn, "SELECT s.Id, s.Sucursal, s.FechaAsignacion, s.SemanaAtencion, s.Estatus, s.TecnicoAsignado, s.Observaciones,
                                                 su.NumSucursal, su.Nombre AS NombreSucursal, u.Nombre AS NombreTecnico, e.Estatus AS Estatus, e.Color AS color
                                         FROM servicios s
                                         LEFT JOIN sucursales su ON s.Sucursal = su.Id
                                         LEFT JOIN usuarios u ON s.TecnicoAsignado = u.Id
                                         INNER JOIN cat_estatus AS e ON s.Estatus = e.Id
+                                        WHERE u.Perfil = 2 AND u.Supervisor = '".$_SESSION["Id"]."'
                                         ORDER BY s.FechaAsignacion DESC");
+    }
+    else if($_SESSION["perfil"] == 2)
+    {
+        $ResServicios = mysqli_query($conn, "SELECT s.Id, s.Sucursal, s.FechaAsignacion, s.SemanaAtencion, s.Estatus, s.TecnicoAsignado, s.Observaciones,
+                                                su.NumSucursal, su.Nombre AS NombreSucursal, u.Nombre AS NombreTecnico, e.Estatus AS Estatus, e.Color AS color
+                                        FROM servicios s
+                                        LEFT JOIN sucursales su ON s.Sucursal = su.Id
+                                        LEFT JOIN usuarios u ON s.TecnicoAsignado = u.Id
+                                        INNER JOIN cat_estatus AS e ON s.Estatus = e.Id
+                                        WHERE u.Id = '".$_SESSION["Id"]."'
+                                        ORDER BY s.FechaAsignacion DESC");
+    }
+
     while($row = mysqli_fetch_assoc($ResServicios)) 
     {
         $semana = $row['SemanaAtencion'];
@@ -298,98 +315,13 @@ if(isset($_POST["hacer"]))
                     </div>
                 </div>
                 <div class="mt-auto pt-sm flex gap-sm">
-                    <button class="flex-1 bg-primary text-on-primary h-12 rounded-DEFAULT text-label-bold font-label-bold hover:opacity-90 transition-opacity">Ver Detalles</button>
+                    <button class="flex-1 bg-primary text-on-primary h-12 rounded-DEFAULT text-label-bold font-label-bold hover:opacity-90 transition-opacity" onclick="DetallesServicio('.$row["Id"].')">
+                        Ver Detalles
+                    </button>
                 </div>
             </div>';
     }
 ?>
-<!-- Card 2: Pending 
-<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-sm flex flex-col gap-sm relative hover:bg-surface-container-low transition-colors group">
-<div class="flex justify-between items-start">
-<div>
-<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wide">ID: #SRV-1043</span>
-<h3 class="text-label-bold font-label-bold text-on-surface mt-xs">Inspección Eléctrica</h3>
-</div>
-<div class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm text-label-sm font-label-sm font-semibold whitespace-nowrap">
-                        Pendiente
-                    </div>
-</div>
-<div class="flex flex-col gap-xs mt-xs">
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span class="">Centro Logístico Sur</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">person</span>
-<span class="">Ana Ramírez</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">calendar_today</span>
-<span class="">Mañana, 08:30 AM</span>
-</div>
-</div>
-<div class="mt-auto pt-sm flex gap-sm">
-<button class="flex-1 bg-primary text-on-primary h-12 rounded-DEFAULT text-label-bold font-label-bold hover:opacity-90 transition-opacity">Ver Detalles</button>
-</div>
-</div>
-<!-- Card 3: Completed
-<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-sm flex flex-col gap-sm relative hover:bg-surface-container-low transition-colors group opacity-80">
-<div class="flex justify-between items-start">
-<div>
-<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wide">ID: #SRV-1041</span>
-<h3 class="text-label-bold font-label-bold text-on-surface mt-xs">Calibración de Sensores</h3>
-</div>
-<div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-1 rounded-sm text-label-sm font-label-sm font-semibold whitespace-nowrap">
-                        Completado
-                    </div>
-</div>
-<div class="flex flex-col gap-xs mt-xs">
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span class="">Planta Central - Área C</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">person</span>
-<span class="">Carlos Mendoza</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">calendar_today</span>
-<span class="">Ayer, 14:00 PM</span>
-</div>
-</div>
-<div class="mt-auto pt-sm flex gap-sm">
-<button class="flex-1 bg-surface-container-high text-on-surface h-12 rounded-DEFAULT text-label-bold font-label-bold border border-outline-variant hover:bg-surface-container-highest transition-colors">Ver Reporte</button>
-</div>
-</div>
-<!-- Card 4: Pending 
-<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-sm flex flex-col gap-sm relative hover:bg-surface-container-low transition-colors group">
-<div class="flex justify-between items-start">
-<div>
-<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wide">ID: #SRV-1044</span>
-<h3 class="text-label-bold font-label-bold text-on-surface mt-xs">Revisión de Tuberías</h3>
-</div>
-<div class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm text-label-sm font-label-sm font-semibold whitespace-nowrap">
-                        Pendiente
-                    </div>
-</div>
-<div class="flex flex-col gap-xs mt-xs">
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span class="">Oficinas Este - Baños</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">person</span>
-<span class="">Luis Torres</span>
-</div>
-<div class="flex items-center gap-2 text-body-md font-body-md text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">calendar_today</span>
-<span class="">Hoy, 15:00 PM</span>
-</div>
-</div>
-<div class="mt-auto pt-sm flex gap-sm">
-<button class="flex-1 bg-primary text-on-primary h-12 rounded-DEFAULT text-label-bold font-label-bold hover:opacity-90 transition-opacity">Ver Detalles</button>
-</div>
-</div>-->
 </div>
 </main>
 <!-- BottomNavBar -->
@@ -402,13 +334,20 @@ if(isset($_POST["hacer"]))
 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">build_circle</span>
 <span class="text-label-sm font-label-sm mt-1">Services</span>
 </a>
+<?php
+    if($_SESSION["perfil"] == 3)
+    {
+?>
 <a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="equipo_pwa.php">
 <span class="material-symbols-outlined text-[24px]">group</span>
 <span class="text-label-sm font-label-sm mt-1">Team</span>
 </a>
+<?php
+    }
+?>
 <a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="perfil_pwa.php">
-<span class="material-symbols-outlined text-[24px]">person</span>
-<span class="text-label-sm font-label-sm mt-1">Profile</span>
+<span class="material-symbols-outlined text-[24px]">logout</span>
+<span class="text-label-sm font-label-sm mt-1">Salir</span>
 </a>
 </nav>
 <!-- Adjust main content margin for desktop sidebar -->
