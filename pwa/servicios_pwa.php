@@ -39,6 +39,19 @@ if(isset($_POST["hacer"]))
     }
 }
 
+if(isset($_GET["hacer"]))
+{
+        if($_GET["hacer"]=='finservicio')
+        {
+                $finserv = time().'|'.$_GET["latitud"].'|'.$_GET["longitud"];
+                mysqli_query($conn, "UPDATE servicios SET Estatus = '4', 
+                                                        FinServicio = '".$finserv."', 
+                                                        Notas = '".$_GET["serviceNotes"]."' 
+                                                WHERE Id = '".$_GET["id"]."'") or die(mysqli_error($conn));
+                $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se finalizo el servicio correctamente</div>';
+        }
+}
+
 ?>
 <html lang="es"><head>
 <meta charset="utf-8">
