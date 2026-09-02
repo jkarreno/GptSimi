@@ -15,6 +15,8 @@ if ($_SESSION["autentificado"] != "SI") {
 include ("../conexion.php");
 include ("../funciones.php");
 
+$mensaje= '';
+
 if(isset($_GET["hacer"]))
 {
     if($_GET["hacer"]=='inicioservicio')
@@ -22,6 +24,22 @@ if(isset($_GET["hacer"]))
         $inicioserv = time().'|'.$_GET["latitud"].'|'.$_GET["longitud"];
 
         mysqli_query($conn, "UPDATE servicios SET InicioServicio = '".$inicioserv."' WHERE Id = '".$_GET["id"]."'");
+    }
+}
+
+if(isset($_POST["hacer"]))
+{
+    if($_POST["hacer"]=='guardadoc')
+    {
+        $nombrearchivo = $_POST["id"].'_'.$_POST["tipoimagen"].'.jpg';
+        $rutaarchivo = 'files/'.$nombrearchivo;
+
+        if (move_uploaded_file($_FILES['imageInput']['tmp_name'], $rutaarchivo)) {
+            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el archivo correctamente</div>';
+        } else {
+            //echo "Error al subir el archivo.";
+            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Error al agregar el archivo</div>';
+        }
     }
 }
 
@@ -37,6 +55,8 @@ $ResSucursal = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM sucursales 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="../estilos/estilos_principal.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="codigo.js"></script>
 <script id="tailwind-config">
         tailwind.config = {
@@ -155,6 +175,7 @@ $ResSucursal = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM sucursales 
 </header>
 <!-- Main Content -->
 <main class="flex-grow w-full max-w-3xl mx-auto p-md md:p-lg space-y-lg">
+    
 <!-- Job Header Details -->
 <section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm space-y-sm">
 <div class="flex justify-between items-start">
@@ -193,6 +214,10 @@ if($ResServicio["InicioServicio"] != NULL)
 <section class="transition-opacity duration-300 bg-surface-container-lowest border border-outline-variant rounded-lg p-md space-y-md" id="evidenceSection">
 <h3 class="text-body-lg font-bold text-on-surface border-b border-outline-variant pb-2">Capturar Evidencias</h3>
 <div class="flex flex-col gap-md">
+    <?php
+    if($ResServicio["InicioServicio"] != NULL AND $ResServicio["FinServicio"] == NULL)
+    {
+    ?>
     <div class="flex flex-col gap-xs">
         <label class="text-label-bold font-label-bold text-on-surface" for="photoType">Tipo de Evidencia</label>
         <select id="photoType" class="w-full border border-outline-variant rounded-lg p-sm bg-surface-container-lowest text-body-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none">
@@ -206,44 +231,44 @@ if($ResServicio["InicioServicio"] != NULL)
             ?>
         </select>
     </div>
-    <button class="w-full h-14 border-2 border-dashed border-outline-variant rounded-lg flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-container-lowest photo-upload-btn">
+    <button class="w-full h-14 border-2 border-dashed border-outline-variant rounded-lg flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-container-lowest photo-upload-btn" onclick="capturarImagen('<?php echo $_GET["id"]; ?>', document.getElementById('photoType').value)">
         <span class="material-symbols-outlined text-[24px]">add_a_photo</span>
         <span class="text-label-bold font-label-bold">Capturar Imagen</span>
     </button>
+    <?php
+    }
+    ?>
     <div id="capturedImagesList" class="space-y-sm mt-md">
-        <!--<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant rounded-lg">
-            <div class="flex items-center gap-sm">
-                <div class="w-12 h-12 bg-surface-container-highest rounded overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ca3?auto=format&amp;fit=crop&amp;q=80&amp;w=100" alt="Thumbnail" class="w-full h-full object-cover">
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-bold font-label-bold text-on-surface">Llegada a la sucursal</span>
-                    <span class="text-label-sm text-on-surface-variant">10:15 AM</span>
-                </div>
-            </div>
-            <button class="text-error hover:bg-error-container p-2 rounded-full transition-colors">
-                <span class="material-symbols-outlined">delete</span>
-            </button>
-        </div>
-        <div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant rounded-lg">
-            <div class="flex items-center gap-sm">
-                <div class="w-12 h-12 bg-surface-container-highest rounded overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&amp;fit=crop&amp;q=80&amp;w=100" alt="Thumbnail" class="w-full h-full object-cover">
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-label-bold font-label-bold text-on-surface">Antes de mantenimiento</span>
-                    <span class="text-label-sm text-on-surface-variant">10:22 AM</span>
-                </div>
-            </div>
-            <button class="text-error hover:bg-error-container p-2 rounded-full transition-colors">
-                <span class="material-symbols-outlined">delete</span>
-            </button>
-        </div>-->
+        <?php
+            $ResImagenes = mysqli_query($conn, "SELECT * FROM cat_imagenes ORDER BY Nombre ASC");
+            while($RResI = mysqli_fetch_array($ResImagenes))
+            {
+                if(file_exists('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg'))
+                {
+                    echo '<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant rounded-lg">
+                            <div class="flex items-center gap-sm">
+                                <div class="w-12 h-12 bg-surface-container-highest rounded overflow-hidden">
+                                    <img src="files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg?'.rand(1,100).'" alt="Thumbnail" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-label-bold font-label-bold text-on-surface">'.$RResI["Nombre"].'</span>
+                                    <span class="text-label-sm text-on-surface-variant">'.date("d/m/Y H:i:s", filemtime('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg')).'</span>
+                                </div>
+                            </div>
+                            <button class="text-error hover:bg-error-container p-2 rounded-full transition-colors" onclick="eliminarImagen(\''.$_GET["id"].'\', \''.$RResI["Id"].'\')">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>';
+                }
+            }
+        ?>
     </div>
 </div>
 <div class="space-y-xs">
 <label class="text-label-bold font-label-bold text-on-surface" for="serviceNotes">Notas del Servicio</label>
-<textarea class="w-full border border-outline-variant rounded-lg p-sm bg-surface-container-lowest text-body-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none resize-none" id="serviceNotes" placeholder="Describe los hallazgos y trabajos realizados..." rows="3"></textarea>
+<textarea class="w-full border border-outline-variant rounded-lg p-sm bg-surface-container-lowest text-body-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none resize-none" id="serviceNotes" placeholder="Describe los hallazgos y trabajos realizados..." rows="3">
+    <?php echo $ResServicio["Notas"]; ?>
+</textarea>
 </div>
 </section>
 <!-- Final Action -->
@@ -253,13 +278,56 @@ if($ResServicio["InicioServicio"] != NULL AND $ResServicio["FinServicio"] == NUL
 {
     ?>
 <section>
-<button class="w-full h-12 bg-primary text-on-primary rounded-lg font-label-bold flex items-center justify-center gap-sm hover:opacity-90 transition-opacity active:scale-[0.98]" id="btnComplete">
+<input type="hidden" id="longitud" value="">
+<input type="hidden" id="latitud" value="">
+<button class="w-full h-12 bg-primary text-on-primary rounded-lg font-label-bold flex items-center justify-center gap-sm hover:opacity-90 transition-opacity active:scale-[0.98]" id="btnComplete" onclick="FinServicio('<?php echo $ResServicio["Id"];?>', '<?php echo $_SESSION["Id"];?>', document.getElementById('latitud').value, document.getElementById('longitud').value, document.getElementById('serviceNotes').value)">
 <span class="material-symbols-outlined">check_circle</span>
                 Finalizar Servicio
             </button>
 </section>
 <?php } ?>
+
 </main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-16 px-base pb-safe bg-surface dark:bg-surface border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="principal_pwa.php">
+<span class="material-symbols-outlined text-[24px]">home_work</span>
+<span class="text-label-sm font-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold hover:bg-surface-container-low h-full w-full rounded-DEFAULT opacity-80 transition-opacity scale-95 duration-100" href="servicios_pwa.php">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">build_circle</span>
+<span class="text-label-sm font-label-sm mt-1">Services</span>
+</a>
+<?php
+    if($_SESSION["perfil"] == 3)
+    {
+?>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="equipo_pwa.php">
+<span class="material-symbols-outlined text-[24px]">group</span>
+<span class="text-label-sm font-label-sm mt-1">Team</span>
+</a>
+<?php
+    }
+?>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="perfil_pwa.php">
+<span class="material-symbols-outlined text-[24px]">logout</span>
+<span class="text-label-sm font-label-sm mt-1">Salir</span>
+</a>
+</nav>
+	<!-- The Modal -->
+    <div id="myModal" class="modal">
+		
+        <!-- Modal content -->
+        <div class="modal-content">
+			
+            <div class="modal-body" id="modal-body">
+    
+            </div>
+			
+        </div>
+		<div class="closse" onclick="cerrarmodal()"><i class="fa-solid fa-circle-xmark" style="font-size: 30px"></i></div>
+    </div>
+</body>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -311,6 +379,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+//definimos el modal
+var modal = document.getElementById('myModal');
+
+function limpiar(){
+    document.getElementById("modal-body").innerHTML="";
+}
+
+function abrirmodal(){
+	modal.style.display = "flex";
+}
+function cerrarmodal(){
+	modal.style.display = "none";
+}
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+	if (event.target == modal) {
+		modal.style.display = "none";
+	}
+}
 </script>
 
 
