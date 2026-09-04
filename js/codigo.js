@@ -17,6 +17,10 @@ $(document).ready(function(){
     })
 })
 
+function reporte_servicio(id){
+    window.open('servicios/reporte_servicio.php?id=' + id, '_blank');
+}
+
 //Created with human intelligence by @jkarreno 2023 - 2024 - 2026
 //May the force be with you
 //move your stars
