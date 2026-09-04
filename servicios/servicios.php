@@ -43,12 +43,14 @@ $cadena.=$mensaje.'<div class="c100 agc ber bff bfz card" id="tabla_leads">
                         <th class="tleads">Fecha Asignación</th>
                         <th class="tleads">Semana Atención</th>
                         <th class="tleads">Fecha Atención</th>
+                        <th class="tleads">Fecha Finalización</th>
                         <th class="tleads">Estatus</th>
                         <th class="tleads">Reporte</th>
                 </thead>
                 <tbody>';
 $ResServicios = mysqli_query($conn, "SELECT s.Id, su.Nombre AS NombreSucursal, u.Nombre AS NombreTecnico, 
-                                            s.FechaAsignacion, s.SemanaAtencion, s.FechaAtencion, ce.Estatus, ce.Color
+                                            s.FechaAsignacion, s.SemanaAtencion, s.FechaAtencion, ce.Estatus, ce.Color, 
+                                            s.InicioServicio, s.FinServicio
                                     FROM servicios AS s
                                     LEFT JOIN sucursales AS su ON s.Sucursal = su.Id
                                     LEFT JOIN usuarios AS u ON s.TecnicoAsignado = u.Id
@@ -56,13 +58,36 @@ $ResServicios = mysqli_query($conn, "SELECT s.Id, su.Nombre AS NombreSucursal, u
                                     ORDER BY s.Id DESC");
 while($RResS=mysqli_fetch_array($ResServicios))
 {
+    if($RResS["InicioServicio"]!=NULL)
+    {
+        $inisios = explode("|", $RResS["InicioServicio"]);
+        $fechainisio = fecha(date("Y-m-d", $inisios[0]));
+    }
+    elseif($RResS["InicioServicio"]==NULL)
+    {
+        $fechainisio = '---';
+    }
+
+    if($RResS["FinServicio"]!=NULL)
+    {
+        $fins = explode("|", $RResS["FinServicio"]);
+        $fechafin = fecha(date("Y-m-d", $fins[0]));
+    }
+    elseif($RResS["FinServicio"]==NULL)
+    {
+        $fechafin = '---';
+    }
+
+
+
     $cadena.='      <tr>
                         <td align="center">'.(permisos($_SESSION["perfil"], 'edit.servicio') ? '<a href="javascript:void(0)" onclick="editar_servicio(\''.$RResS["Id"].'\')">'.$RResS["Id"].'</a>' : $RResS["Id"]).'</td>
                         <td>'.$RResS["NombreSucursal"].'</td>
                         <td>'.$RResS["NombreTecnico"].'</td>
                         <td>'.($RResS["FechaAsignacion"]>0 ? date("d/m/Y H:i:s", $RResS["FechaAsignacion"]) : '').'</td>    
                         <td>'.$RResS["SemanaAtencion"].'</td>
-                        <td>'.($RResS["FechaAtencion"]>0 ? date("d/m/Y H:i:s", $RResS["FechaAtencion"]) : '').'</td>
+                        <td>'.$fechainisio.'</td>
+                        <td>'.$fechafin.'</td>
                         <td><span class="estatus" style="background-color: '.$RResS["Color"].'; margin-left: 15px; margin-right: 15px">'.$RResS["Estatus"].'</span></td>
                         <td align="center">'.(permisos($_SESSION["perfil"], 'view.reporte') ? '<a href="javascript:void(0)" onclick="reporte_servicio(\''.$RResS["Id"].'\')"><i class="ri-file-list-3-line"></i></a>' : '').'</td>
                     </tr>';
