@@ -35,6 +35,11 @@ if(isset($_POST["hacer"]))
         $rutaarchivo = 'files/'.$nombrearchivo;
 
         if (move_uploaded_file($_FILES['imageInput']['tmp_name'], $rutaarchivo)) {
+            //guarda en database
+            mysqli_query($conn, "INSERT INTO servicios_capturas (Fecha, IdServicio, IdTecnico, IdCaptura, Archivo, Estatus)
+                                                        VALUES ('".time()."', '".$_POST["id"]."', '".$_SESSION["Id"]."', '".$_POST["tipoimagen"]."', 
+                                                                '".$nombrearchivo."', 'Validar')");
+                                                                
             $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el archivo correctamente</div>';
         } else {
             //echo "Error al subir el archivo.";
@@ -164,7 +169,7 @@ $ResSucursal = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM sucursales 
     }
   </style>
   </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col pb-16 md:pt-14 md:pb-0">
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col pb-16 md:pt-14 md:pb-0" style="padding-top: 70px;">
 <!-- TopAppBar -->
 <header class="flex justify-between items-center w-full px-container-margin h-14 z-50 bg-surface dark:bg-surface docked full-width top-0 border-b border-outline-variant dark:border-outline">
 <div class="flex items-center gap-sm">
@@ -174,7 +179,7 @@ $ResSucursal = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM sucursales 
 
 </header>
 <!-- Main Content -->
-<main class="flex-grow w-full max-w-3xl mx-auto p-md md:p-lg space-y-lg">
+<main class="flex-grow px-container-margin py-lg flex flex-col gap-lg w-full max-w-7xl mx-auto">
     
 <!-- Job Header Details -->
 <section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm space-y-sm">
@@ -241,10 +246,20 @@ if($ResServicio["InicioServicio"] != NULL)
     <div id="capturedImagesList" class="space-y-sm mt-md">
         <?php
             $ResImagenes = mysqli_query($conn, "SELECT * FROM cat_imagenes ORDER BY Nombre ASC");
+            $J=0; $T=0;
             while($RResI = mysqli_fetch_array($ResImagenes))
             {
                 if(file_exists('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg'))
                 {
+                    $J++;
+                    $ResImg = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM servicios_capturas WHERE IdServicio='".$_GET["id"]."' AND IdCaptura = '".$RResI["Id"]."' ORDER BY Fecha DESC LIMIT 1"));
+                    
+                    switch($ResImg["Estatus"])
+                    {
+                        case 'Validar': $color=''; break;
+                        case 'Rechazada': $color = 'style="color: #ba1a1a"'; break;
+                        case 'Autorizada': $color = 'style="color: #61b15f"'; $T++; break;
+                    }
                     echo '<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant rounded-lg">
                             <div class="flex items-center gap-sm">
                                 <div class="w-12 h-12 bg-surface-container-highest rounded overflow-hidden">
@@ -253,11 +268,16 @@ if($ResServicio["InicioServicio"] != NULL)
                                 <div class="flex flex-col">
                                     <span class="text-label-bold font-label-bold text-on-surface">'.$RResI["Nombre"].'</span>
                                     <span class="text-label-sm text-on-surface-variant">'.date("d/m/Y H:i:s", filemtime('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg')).'</span>
+                                    <span class="text-label-sm text-on-surface-variant" '.$color.'>'.$ResImg["Estatus"].'</span>
+                                    '.($ResImg["Estatus"]=='Rechazada' ? '<span class="text-label-sm text-on-surface-variant">'.$ResImg["Comentarios"].'</span>' : '').'
                                 </div>
-                            </div>
+                            </div>'.($ResImg["Estatus"] != 'Autorizada' ? '
                             <button class="text-error hover:bg-error-container p-2 rounded-full transition-colors" onclick="eliminarImagen(\''.$_GET["id"].'\', \''.$RResI["Id"].'\')">
                                 <span class="material-symbols-outlined">delete</span>
-                            </button>
+                            </button>' : '
+                            <button class="text-on-tertiary-container hover:bg-error-container p-2 rounded-full transition-colors">
+                                <span class="material-symbols-outlined">image_arrow_up</span>
+                            </button>').'
                         </div>';
                 }
             }
@@ -274,7 +294,7 @@ if($ResServicio["InicioServicio"] != NULL)
 <!-- Final Action -->
  <?php
 }
-if($ResServicio["InicioServicio"] != NULL AND $ResServicio["FinServicio"] == NULL)
+if($ResServicio["InicioServicio"] != NULL AND $ResServicio["FinServicio"] == NULL AND $J == $T)
 {
     ?>
 <section>
