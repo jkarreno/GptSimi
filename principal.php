@@ -63,7 +63,7 @@ include ("funciones.php");
 
 	<link rel="icon" href="images/dashboard.png" type="image/png">
 </head>
-<body onload="ini(); diade()" onkeypress="parar()" onclick="parar()">
+<body onload="ini(); dashboard();" onkeypress="parar()" onclick="parar()">
 
 	<input type="checkbox" id="check">
 	<header class="" style="background-color: #000; border-bottom: 1px solid #000;">
@@ -77,7 +77,7 @@ include ("funciones.php");
 	</header>
 
 	<div class="menu_principal">
-		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard(\''.date("Y-01-01").'\', \''.date("Y-m-d").'\', \'1\')"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
+		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard()"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
 		<?php if(permisos($_SESSION["perfil"], "ver.servicios")): ?>
 			<div class="tooltip top" onclick="servicios()"><i class="fa-solid fa-house-laptop"></i><span class="tiptext">Servicios</span></div>
 		<?php endif; ?>
