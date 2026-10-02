@@ -75,6 +75,12 @@ while($RResTec=mysqli_fetch_array($ResTecnicos))
 }
 $cadena.='          </select>
                 </div>
+                <div class="c30">
+                    <label class="l_form">Pago: </label>
+                    <input type="number" name="pago" id="pago" value="'.$ResS["Pago"].'" step="0.01">
+                </div>
+                <div class="c30"></div>
+                <div class="c30"></div>
                 <div class="c100">
                     <label class="l_form">Observaciones :</label>
                     <textarea name="observaciones" id="observaciones" rows="4">'.$ResS["Observaciones"].'</textarea>

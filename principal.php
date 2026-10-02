@@ -63,7 +63,7 @@ include ("funciones.php");
 
 	<link rel="icon" href="images/dashboard.png" type="image/png">
 </head>
-<body onload="ini(); dashboard();" onkeypress="parar()" onclick="parar()">
+<body onload="ini();<?php if(permisos($_SESSION["perfil"], "ver.dashboard")): ?> dashboard();<?php endif; ?>" onkeypress="parar()" onclick="parar()">
 
 	<input type="checkbox" id="check">
 	<header class="" style="background-color: #000; border-bottom: 1px solid #000;">
@@ -77,13 +77,16 @@ include ("funciones.php");
 	</header>
 
 	<div class="menu_principal">
-		<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard()"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
+		<?php if(permisos($_SESSION["perfil"], "ver.dashboard")): ?>
+			<div class="tooltip top"><a href="principal.php"><a href="#" onclick="dashboard()"><i class="ri-dashboard-3-line"></i></a><span class="tiptext">Dashboard</span></div>
+		<?php endif; ?>
 		<?php if(permisos($_SESSION["perfil"], "ver.servicios")): ?>
 			<div class="tooltip top" onclick="servicios()"><i class="fa-solid fa-house-laptop"></i><span class="tiptext">Servicios</span></div>
 		<?php endif; ?>
-		<!--<div class="tooltip top" onclick="solvexpress()"><a href="#"><img src="images/express.png" border="0" /></a><span class="tiptext">Express</span></div>
-		<div class="tooltip top" onclick="leads()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
-		<div class="tooltip top" onclick="leads_broxel()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
+		<?php if(permisos($_SESSION["perfil"], "ver.reportes")): ?>
+			<div class="tooltip top" onclick="reportes()"><a href="#"><i class="ri-file-text-line"></i></a><span class="tiptext">Reportes</span></div>
+		<?php endif; ?>
+		<!--<div class="tooltip top" onclick="leads_broxel()"><a href="#"><i class="ri-crosshair-line"></i></a><span class="tiptext">Leads</span></div>
 		<div class="tooltip top" onclick="clientes()"><a href="#"><i class="ri-group-3-line"></i></a><span class="tiptext">Clientes</span></div>
 		<div><a href="#" onclick="pedidos();"><i class="fa-solid fa-boxes-stacked"></i></a></div>
 		<div class="tooltip top" onclick="creditos()"><a href="#"><i class="ri-money-dollar-box-line"></i></a><span class="tiptext">Créditos</span></div>

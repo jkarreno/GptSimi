@@ -1,0 +1,2 @@
+ALTER TABLE `sucursales`
+	ADD COLUMN `Estado` INT NULL DEFAULT NULL AFTER `Direccion`;

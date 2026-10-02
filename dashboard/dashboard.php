@@ -56,7 +56,7 @@ while($RResImgs = mysqli_fetch_array($ResImgs))
                             <td>'.$RResImgs["NombreTecnico"].'</td>
                             <td>'.$RResImgs["NombreSupervisor"].'</td>
                             <td>'.$RResImgs["Captura"].'</td>
-                            <td><a href="javascript:void(0):" onclick="imagen_reporte(\''.$RResImgs["Id"].'\')"><i class="ri-image-2-line"></i></a></td>
+                            <td>'.(permisos($_SESSION["perfil"], "aut.captura") ? '<a href="javascript:void(0):" onclick="imagen_reporte(\''.$RResImgs["Id"].'\')"' : '').'><i class="ri-image-2-line"></i></a></td>
                         </tr>';
 }
 $cadena.='          </tbody>

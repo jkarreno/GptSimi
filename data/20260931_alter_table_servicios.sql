@@ -1,0 +1,5 @@
+ALTER TABLE `servicios`
+	ADD COLUMN `Pago` DECIMAL(10,2) NULL DEFAULT NULL AFTER `Notas`;
+
+ALTER TABLE `servicios`
+	ADD COLUMN `EstatusPago` VARCHAR(50) NULL DEFAULT 'Pendiente' AFTER `Pago`;

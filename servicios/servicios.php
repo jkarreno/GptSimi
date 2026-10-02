@@ -12,10 +12,10 @@ if(isset($_POST["hacer"]))
 {
     if($_POST["hacer"]=="addservicio")
     {
-        mysqli_query($conn, "INSERT INTO servicios (Sucursal, FechaAsignacion, SemanaAtencion, Estatus, TecnicoAsignado, Observaciones) 
+        mysqli_query($conn, "INSERT INTO servicios (Sucursal, FechaAsignacion, SemanaAtencion, Estatus, TecnicoAsignado, Observaciones, Pago) 
                                             VALUES ('".$_POST["sucursal"]."', '".time()."', '".$_POST["semanaatencion"]."', 
                                                     '".($_POST["tecnico"]==0 ? '1' : '2')."', '".$_POST["tecnico"]."', 
-                                                    '".$_POST["observaciones"]."')") or die(mysqli_error($conn));
+                                                    '".$_POST["observaciones"]."', '".$_POST["pago"]."')") or die(mysqli_error($conn));
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el servicio correctamente</div>';
     }
@@ -24,6 +24,7 @@ if(isset($_POST["hacer"]))
         mysqli_query($conn, "UPDATE servicios SET Sucursal = '".$_POST["sucursal"]."', 
                                                     SemanaAtencion = '".$_POST["semanaatencion"]."', 
                                                     TecnicoAsignado = '".$_POST["tecnico"]."', 
+                                                    Pago = '".$_POST["pago"]."',
                                                     Observaciones = '".$_POST["observaciones"]."' ".($_POST["tecnico"]>0 ? ", Estatus = '2'" : "")."
                                             WHERE Id = '".$_POST["id"]."'") or die(mysqli_error($conn));
 
