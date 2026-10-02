@@ -19,9 +19,20 @@ $cadena='<div class="c100 card">
                     <label class="l_form">Responsable :</label>
                     <input type="text" name="responsable" id="responsable">
                 </div>
-                <div class="c100">
+                <div class="c60">
                     <label class="l_form">Dirección :</label>
                     <input type="text" name="direccion" id="direccion">
+                </div>
+                <div class="c30">
+                    <label class="l_form">Estado :</label>
+                    <select name="estado" id="estado">
+                        <option value="0">Seleccione un estado</option>';
+$ResEstados =mysqli_query($conn, "SELECT * FROM cat_estados ORDER BY Estado ASC");
+while($RResEstados = mysqli_fetch_array($ResEstados))
+{
+    $cadena.='          <option value="'.$RResEstados["Id"].'">'.$RResEstados["Estado"].'</option>';
+}
+$cadena.='          </select>
                 </div>
                 <div class="c30">
                     <label class="l_form">Teléfono :</label>

@@ -11,9 +11,10 @@ if(isset($_POST["hacer"]))
     //agregar sucursal
     if($_POST["hacer"]=='addsucursal')
     {
-        mysqli_query($conn, "INSERT INTO sucursales (NumSucursal, Nombre, Direccion, Telefono, Responsable, CorreoE) 
+        mysqli_query($conn, "INSERT INTO sucursales (NumSucursal, Nombre, Direccion, Estado,Telefono, Responsable, CorreoE) 
                                             VALUES('".$_POST["num_sucursal"]."', '".$_POST["nombre"]."', '".$_POST["direccion"]."', 
-                                                    '".$_POST["telefono"]."', '".$_POST["responsable"]."', '".$_POST["correoe"]."')") or die(mysqli_error($conn));
+                                                    '".$_POST["estado"]."', '".$_POST["telefono"]."', '".$_POST["responsable"]."', 
+                                                    '".$_POST["correoe"]."')") or die(mysqli_error($conn));
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego la sucursal '.$_POST["nombre"].'</div>';
     }
