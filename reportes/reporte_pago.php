@@ -32,8 +32,8 @@ $ResCorteDía = mysqli_query($conn, "SELECT s.Id, s.EstatusPago, s.Pago, s.FinSe
                                     WHERE s.FinServicio IS NOT NULL
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fecha." 00:00:00')
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fecha." 23:59:59')
-                                    AND ".($estado>0 ? "su.Estado = '".$estado."'" : "su.Estado LIKE '%'")."
-                                    AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "c.Id LIKE '%'")) or die(mysqli_error($conn));
+                                    AND ".($estado>0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
+                                    AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")) or die(mysqli_error($conn));
 
 $totalconsultorios = mysqli_num_rows($ResCorteDía);
 
@@ -45,8 +45,8 @@ $ResTotalPago = mysqli_fetch_array(mysqli_query($conn, "SELECT SUM(s.Pago) AS To
                                     WHERE s.FinServicio IS NOT NULL
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fecha." 00:00:00')
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fecha." 23:59:59')
-                                    AND ".($estado>0 ? "su.Estado = '".$estado."'" : "su.Estado LIKE '%'")."
-                                    AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "c.Id LIKE '%'")));
+                                    AND ".($estado>0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
+                                    AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")));
 
 if($estado == 0)
 {
