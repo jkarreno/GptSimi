@@ -107,7 +107,7 @@ if(isset($_POST["hacer"]))
 
         else
         {
-            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Ocurrio un error, intente nuevamente</div>';
+            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-down"></i> Ocurrio un error, intente nuevamente</div>';
         }
     }
 }
