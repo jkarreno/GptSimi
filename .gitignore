@@ -22,3 +22,6 @@ vendor/
 
 #variables de entorno
 .env
+
+#para importar
+*.csv

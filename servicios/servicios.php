@@ -30,6 +30,101 @@ if(isset($_POST["hacer"]))
 
         $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se actualizo el servicio correctamente</div>';
     }
+
+    //importar servicios
+    if($_POST["hacer"]=='importarservicios')
+    {
+        if($_FILES['fis']!='')
+        {
+            $nombre_archivo_r = time().'_'.$_FILES['fis']['name']; 
+
+            $ext_r=explode('.', $nombre_archivo_r);
+
+            if(is_uploaded_file($_FILES['fis']['tmp_name']))
+            { 
+                if(copy($_FILES['fis']['tmp_name'], './files/'.$nombre_archivo_r))
+                {
+                    $copyfile=1;
+                }
+                else
+                {
+                    $copyfile=2;
+                }
+            }
+            else
+            {
+                $copyfile=3;
+            }
+        }
+
+        if($copyfile==1)
+        {
+            $csv = file('./files/'.$nombre_archivo_r);
+            $primera_linea = true;
+
+        	$cuentalineas = 0; $servicios = 0; $errores = 0;
+            foreach ($csv as $linea) 
+            {
+                if ($primera_linea) {
+                    $primera_linea = false; // Desactiva la omisión después de la primera línea
+                    continue; // Salta la primera línea
+                }
+
+                $linea = str_getcsv($linea, "|");
+
+                //verifica que exista el tecnico
+                $ResTecnico = mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1");
+
+
+                if(mysqli_num_rows($ResTecnico)==1)
+                {
+                    $RResTecnico = mysqli_fetch_array($ResTecnico);
+                    $IdTecnico = $RResTecnico["Id"];
+                }
+                else
+                {
+                    mysqli_query($conn, "INSERT INTO usuarios (Usuario, Contrasenna, Nombre, Perfil, Supervisor)
+                                                        VALUES ('".strtolower($linea[12])."', '".md5(strtolower($linea[12]))."', '".$linea[12]."', '2', '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
+
+                    $ResTecnico = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1"));
+                    $IdTecnico = $ResTecnico["Id"];
+                }
+
+                $ResSucursal = mysqli_query($conn, "SELECT Id FROM sucursales WHERE NumSucursal = '".$linea[0]."' LIMIT 1");
+
+                if(mysqli_num_rows($ResSucursal)==1)
+                {
+                    $IdSucursal = mysqli_fetch_array($ResSucursal);
+
+                    $zona = explode(' ', $linea[7]);
+
+                    $fecha = DateTime::createFromFormat('d/m/Y', $linea[13])->getTimestamp();
+
+                    var_dump($fecha);
+                    die();
+
+                    mysqli_query($conn, "INSERT INTO servicios (Sucursal, FechaAsignacion, FechaAtencion, Estatus, TecnicoAsignado)
+                                                        VALUES ('".$IdSucursal["Id"]."', '".time()."', '".$fecha."', '2', '".$IdTecnico."')");
+
+                    mysqli_query($conn, "UPDATE sucursale SET Zona = '".$zona[1]."' WHERE Id = '".$IdSucursal["Id"]."'");
+
+                    $servicios++;
+                }
+                else
+                {
+                    $errores++;    
+                }
+
+                $cuentalineas++;
+            }
+
+            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agregaron '.$servicios.' de '.$cuentalineas.'. Ocurrieron '.$errores.' errores</div>';
+        }
+        else
+        {
+            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-down"></i> Ocurrio un error, intente nuevamente</div>';
+        }
+    }
 }
 
 
@@ -105,7 +200,7 @@ $(document).ready( function () {
         language: {
             decimal: '.',
             thousands: ',',
-            url: '//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json'
+            url: 'https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json'
         },
         dom: 'Bfrtip',
         buttons: [
@@ -113,6 +208,13 @@ $(document).ready( function () {
                 text: 'Nuevo Servicio',
                 action: function ( e, dt, node, config ) {
                     agregar_servicio();
+                }
+            },
+            <?php endif; ?>
+            <?php if(permisos($_SESSION["perfil"], 'import.servicios')): ?>{
+                text: 'Importar Servicios',
+                action: function ( e, dt, node, config ) {
+                    importar_servicios();
                 }
             }
             <?php endif; ?>
@@ -145,6 +247,16 @@ function editar_servicio(id){
     });
 }
 
+function importar_servicios(){
+    limpiar();
+    abrirmodal();
+    $.ajax({
+                type: 'POST',
+                url : 'servicios/importar_servicios.php'
+    }).done (function ( info ){
+        $('#modal-body').html(info);
+    });
+}
 //mostrar mensaje despues de los cambios
 setTimeout(function() { 
     $('#mesaje').fadeOut('fast'); 
