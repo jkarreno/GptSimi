@@ -256,7 +256,7 @@ if(isset($_GET["hacer"]))
                                         LEFT JOIN sucursales su ON s.Sucursal = su.Id
                                         LEFT JOIN usuarios u ON s.TecnicoAsignado = u.Id
                                         INNER JOIN cat_estatus AS e ON s.Estatus = e.Id
-                                        WHERE u.Perfil = 2 AND u.Supervisor = '".$_SESSION["Id"]."'
+                                        WHERE u.Perfil = 2 AND u.Supervisor = '".$_SESSION["Id"]."' AND s.Estatus < 4
                                         ORDER BY s.FechaAsignacion DESC");
     }
     else if($_SESSION["perfil"] == 2)
@@ -267,7 +267,7 @@ if(isset($_GET["hacer"]))
                                         LEFT JOIN sucursales su ON s.Sucursal = su.Id
                                         LEFT JOIN usuarios u ON s.TecnicoAsignado = u.Id
                                         INNER JOIN cat_estatus AS e ON s.Estatus = e.Id
-                                        WHERE u.Id = '".$_SESSION["Id"]."'
+                                        WHERE u.Id = '".$_SESSION["Id"]."' AND s.Estatus < 4
                                         ORDER BY s.FechaAsignacion DESC");
     }
 
