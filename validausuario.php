@@ -32,7 +32,16 @@ if (mysqli_num_rows($rs)!=0){
  //    sesion_register("usuario");
 //    $usuario = $username;
     if (strpos($_SESSION["permisos"], '|10|') !== false) {
-        header ("Location: pwa/principal_pwa.php"); 
+        if($_POST["pass"]=='1234567890')
+        {
+            $_SESSION["pass"]=$_POST["pass"];
+            header ("Location: pwa/perfil.php"); 
+        }
+        else
+        {
+            header ("Location: pwa/principal_pwa.php"); 
+        }
+        
     } else {
         header ("Location: principal.php"); 
     }

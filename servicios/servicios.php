@@ -84,7 +84,7 @@ if(isset($_POST["hacer"]))
                 else
                 {
                     mysqli_query($conn, "INSERT INTO usuarios (Usuario, Contrasenna, Nombre, Perfil, Supervisor)
-                                                        VALUES ('".strtolower($linea[12])."', '".md5(strtolower($linea[12]))."', '".$linea[12]."', '2', '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
+                                                        VALUES ('".strtolower($linea[12])."', '".md5('1234567890')."', '".$linea[12]."', '2', '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
 
                     $ResTecnico = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1"));
                     $IdTecnico = $ResTecnico["Id"];

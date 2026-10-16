@@ -18,6 +18,17 @@ function capturarImagen(id, tipoimagen){
 		$('#modal-body').html(info);
 	});
 }
+function editar_datos(dato){
+    limpiar();
+    abrirmodal();
+    $.ajax({
+				type: 'POST',
+				url : 'editar_datos_pwa.php',
+                data: 'dato=' + dato,
+	}).done (function ( info ){
+		$('#modal-body').html(info);
+	});
+}
 function FinServicio(id, idtecnico, latitud, longitud, notas){
     window.location.href = 'servicios_pwa.php?id='+id+'&latitud='+latitud+'&longitud='+longitud+'&idtecnico='+idtecnico+'&hacer=finservicio&serviceNotes='+notas;
 }

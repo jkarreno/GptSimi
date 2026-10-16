@@ -163,7 +163,7 @@ elseif($_SESSION["perfil"] == 2)
 <div class="flex items-center gap-sm">
 <img class="w-10 h-8" src="../images/logotrans.png"/>
 </div>
-<h1 class="text-headline-md font-headline-md-mobile font-bold text-primary dark:text-primary-fixed"><?php echo $_SESSION['nombre']; ?></h1>
+<h1 class="text-headline-md font-headline-md-mobile font-bold text-primary dark:text-primary-fixed"><a href="perfil.php"><?php echo $_SESSION['nombre']; ?></a></h1>
 
 </header>
 <!-- Main Content -->
@@ -308,7 +308,7 @@ elseif($_SESSION["perfil"] == 2)
 <?php
     }
 ?>
-<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1" href="../logout.php">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1" href="logout.php">
 <span class="material-symbols-outlined">Logout</span>
 <span class="text-label-sm font-label-sm">Salir</span>
 </a>
