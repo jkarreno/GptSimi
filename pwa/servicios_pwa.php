@@ -220,7 +220,7 @@ if(isset($_GET["hacer"]))
 <div class="flex items-center gap-sm">
 <img class="w-10 h-8" src="../images/logotrans.png"/>
 </div>
-<h1 class="text-headline-md font-headline-md-mobile font-bold text-primary dark:text-primary-fixed"><?php echo $_SESSION['nombre']; ?></h1>
+<h1 class="text-headline-md font-headline-md-mobile font-bold text-primary dark:text-primary-fixed"><?php echo $_SESSION['nombre']; ?></a></h1>
 
 </header>
 <!-- Main Content -->
@@ -358,7 +358,7 @@ if(isset($_GET["hacer"]))
 <?php
     }
 ?>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="perfil_pwa.php">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low h-full w-full rounded-DEFAULT" href="logout.php">
 <span class="material-symbols-outlined text-[24px]">logout</span>
 <span class="text-label-sm font-label-sm mt-1">Salir</span>
 </a>
