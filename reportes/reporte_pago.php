@@ -8,7 +8,8 @@ include("../funciones.php");
 
 require('../servicios/fpdf/fpdf.php');
 
-$fecha = $_GET["fecha"];
+$fechadesde = $_GET["fechadesde"];
+$fechahasta = $_GET["fechahasta"];
 $estado = $_GET["estado"];
 $coordinador = $_GET["coordinador"];
 
@@ -22,6 +23,8 @@ $dias = [
     'Saturday'  => 'sábado'
 ];
 
+$fecha = date("Y-m-d");
+
 $dia = $dias[date('l', strtotime($fecha))];
 
 $ResCorteDía = mysqli_query($conn, "SELECT s.Id, s.EstatusPago, s.Pago, s.FinServicio, su.NumSucursal, su.Nombre AS NombreSucursal
@@ -30,8 +33,8 @@ $ResCorteDía = mysqli_query($conn, "SELECT s.Id, s.EstatusPago, s.Pago, s.FinSe
                                     INNER JOIN usuarios AS u ON s.TecnicoAsignado = u.Id
                                     INNER JOIN usuarios AS c ON u.Supervisor = c.Id
                                     WHERE s.FinServicio IS NOT NULL
-                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fecha." 00:00:00')
-                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fecha." 23:59:59')
+                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fechadesde." 00:00:00')
+                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fechahasta." 23:59:59')
                                     AND ".($estado>0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
                                     AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")) or die(mysqli_error($conn));
 
@@ -43,8 +46,8 @@ $ResTotalPago = mysqli_fetch_array(mysqli_query($conn, "SELECT SUM(s.Pago) AS To
                                     INNER JOIN usuarios AS u ON s.TecnicoAsignado = u.Id
                                     INNER JOIN usuarios AS c ON u.Supervisor = c.Id
                                     WHERE s.FinServicio IS NOT NULL
-                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fecha." 00:00:00')
-                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fecha." 23:59:59')
+                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fechadesde." 00:00:00')
+                                    AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fechahasta." 23:59:59')
                                     AND ".($estado>0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
                                     AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")));
 
@@ -100,7 +103,7 @@ $pdf->Cell(90,10,$totalconsultorios,0,0,'L');
 $pdf->SetY(20);
 $pdf->SetX(105);
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(90,10,$dia.', '.fecha($fecha),0,0,'R');
+$pdf->Cell(90,10,utf8_decode($dia).', '.fecha($fecha),0,0,'R');
 //
 $pdf->SetY(30);
 $pdf->SetX(100);
