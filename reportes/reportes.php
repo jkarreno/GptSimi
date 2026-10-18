@@ -65,13 +65,13 @@ while($RResCoordinadores = mysqli_fetch_array($ResCoordinadores))
 $cadena.='              </select>
                     </div>
                     <div class="c30">
-                        <button 
+                        '.(permisos($_SESSION["perfil"], 'gen.reporte') ? '<button 
                             name="btnreporte" 
                             id="btnreporte" 
                             class="boton" 
                             onclick="generar_reporte()">
                            Generar Reporte
-                        </button>
+                        </button>' : '').'
                     </div>
                 </form>
                 <table id="table_reporte_pago" class="stripe row-border order-column nowrap" style="width: 100%;">
@@ -81,7 +81,7 @@ $cadena.='              </select>
                             <th class="tleads">Num. Consultorio</th>
                             <th class="tleads">Nombre Consultorio</th>
                             <th class="tleads">Fecha Atención</th>
-                            <th class="tleads">Pago</th>
+                            '.(permisos($_SESSION["perfil"], 'ver.pago') ? '<th class="tleads">Pago</th>' : '').'
                             <th class="tleads">Status Pago</th>
                     </thead>
                     <tbody>';
@@ -104,7 +104,7 @@ while($RResCD=mysqli_fetch_array($ResCorteDía))
                         <td class="tleads">'.$RResCD["NumSucursal"].'</td>
                         <td class="tleads">'.$RResCD["NombreSucursal"].'</td>
                         <td class="tleads">'.fecha(date("Y-m-d", explode("|", $RResCD["FinServicio"])[0])).'</td>
-                        <td class="tleads"><input type="number" class="form-control cantidad" data-id="'.$RResCD["Id"].'" value="'.($RResCD["Pago"]>0 && $RResCD["Pago"]!==null ? $RResCD["Pago"] : '0.00').'" min="0" step="1"></td>
+                        '.(permisos($_SESSION["perfil"], 'ver.pago') ? '<td class="tleads">'.(permisos($_SESSION["perfil"], 'edit.pago') ? '<input type="number" class="form-control cantidad" data-id="'.$RResCD["Id"].'" value="'.($RResCD["Pago"]>0 && $RResCD["Pago"]!==null ? $RResCD["Pago"] : '0.00').'" min="0" step="1">' : '$ '.number_format(($RResCD["Pago"]>0 && $RResCD["Pago"]!==null ? $RResCD["Pago"]: 0.00), 2)).'</td>' : '').'
                         <td class="tleads">'.$RResCD["EstatusPago"].'</td>
                     </tr>';
     $totalPago += ($RResCD["Pago"]>0 && $RResCD["Pago"]!==null ? $RResCD["Pago"] : 0);

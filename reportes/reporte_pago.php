@@ -110,10 +110,14 @@ $pdf->SetX(100);
 $pdf->SetFont('Arial','B',12);
 $pdf->Cell(90,10,'Monto:',0,0,'L');
 //
-$pdf->SetY(30);
-$pdf->SetX(115);
-$pdf->SetFont('Arial','',12);
-$pdf->Cell(90,10,'$ '.($ResTotalPago["TotalPago"]>0 && $ResTotalPago["TotalPago"]!==null ? number_format($ResTotalPago["TotalPago"], 2) : '0.00'),0,0,'L');
+//if(permisos($_SESSION["perfil"], 'ver.pago'))
+//{
+    $pdf->SetY(30);
+    $pdf->SetX(115);
+    $pdf->SetFont('Arial','',12);
+    $pdf->Cell(90,10,'$ '.($ResTotalPago["TotalPago"]>0 && $ResTotalPago["TotalPago"]!==null ? number_format($ResTotalPago["TotalPago"], 2) : '0.00'),0,0,'L');
+//}
+
 //
 $pdf->SetY(30);
 $pdf->SetX(105);
