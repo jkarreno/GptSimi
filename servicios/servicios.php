@@ -72,50 +72,53 @@ if(isset($_POST["hacer"]))
 
                 $linea = str_getcsv($linea, "|");
 
-                //verifica que exista el tecnico
-                $ResTecnico = mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1");
+                //if($linea[9]=='Pendiente')
+               //{
+                    //verifica que exista el tecnico
+                    $ResTecnico = mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1");
 
 
-                if(mysqli_num_rows($ResTecnico)==1)
-                {
-                    $RResTecnico = mysqli_fetch_array($ResTecnico);
-                    $IdTecnico = $RResTecnico["Id"];
-                }
-                else
-                {
-                    mysqli_query($conn, "INSERT INTO usuarios (Usuario, Contrasenna, Nombre, Perfil, Supervisor)
-                                                        VALUES ('".strtolower($linea[12])."', '".md5('1234567890')."', '".$linea[12]."', '2', '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
+                    if(mysqli_num_rows($ResTecnico)==1)
+                    {
+                        $RResTecnico = mysqli_fetch_array($ResTecnico);
+                        $IdTecnico = $RResTecnico["Id"];
+                    }
+                    else
+                    {
+                        mysqli_query($conn, "INSERT INTO usuarios (Usuario, Contrasenna, Nombre, Perfil, Supervisor)
+                                                            VALUES ('".strtolower($linea[12])."', '".md5('1234567890')."', '".$linea[12]."', '2', '".$_POST["supervisor"]."')") or die(mysqli_error($conn));
 
-                    $ResTecnico = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1"));
-                    $IdTecnico = $ResTecnico["Id"];
-                }
+                        $ResTecnico = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM usuarios WHERE Perfil = 2 AND Supervisor = '".$_POST["supervisor"]."' AND Nombre = '".$linea[12]."' LIMIT 1"));
+                        $IdTecnico = $ResTecnico["Id"];
+                    }
 
-                $ResSucursal = mysqli_query($conn, "SELECT Id FROM sucursales WHERE NumSucursal = '".$linea[0]."' LIMIT 1");
+                    $ResSucursal = mysqli_query($conn, "SELECT Id FROM sucursales WHERE NumSucursal = '".$linea[0]."' LIMIT 1");
 
-                if(mysqli_num_rows($ResSucursal)==1)
-                {
-                    $IdSucursal = mysqli_fetch_array($ResSucursal);
+                    if(mysqli_num_rows($ResSucursal)==1)
+                    {
+                        $IdSucursal = mysqli_fetch_array($ResSucursal);
 
-                    $zona = explode(' ', $linea[7]);
+                        $zona = explode(' ', $linea[7]);
 
-                    $fecha = DateTime::createFromFormat('d/m/Y', $linea[13])->getTimestamp();
+                        $fecha = DateTime::createFromFormat('d/m/Y', $linea[13])->getTimestamp();
 
-                    var_dump($fecha);
-                    die();
+                        //var_dump($fecha);
+                        //die();
 
-                    mysqli_query($conn, "INSERT INTO servicios (Sucursal, FechaAsignacion, FechaAtencion, Estatus, TecnicoAsignado)
-                                                        VALUES ('".$IdSucursal["Id"]."', '".time()."', '".$fecha."', '2', '".$IdTecnico."')");
+                        mysqli_query($conn, "INSERT INTO servicios (Sucursal, FechaAsignacion, FechaAtencion, Estatus, TecnicoAsignado)
+                                                            VALUES ('".$IdSucursal["Id"]."', '".time()."', '".$fecha."', '2', '".$IdTecnico."')") or die(mysqli_error($conn));
 
-                    mysqli_query($conn, "UPDATE sucursale SET Zona = '".$zona[1]."' WHERE Id = '".$IdSucursal["Id"]."'");
+                        mysqli_query($conn, "UPDATE sucursales SET Zona = '".$zona[1]."' WHERE Id = '".$IdSucursal["Id"]."'") or die(mysqli_error($conn));
 
-                    $servicios++;
-                }
-                else
-                {
-                    $errores++;    
-                }
+                        $servicios++;
+                    }
+                    else
+                    {
+                        $errores++;    
+                    }
 
-                $cuentalineas++;
+                    $cuentalineas++;
+                //}
             }
 
             $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agregaron '.$servicios.' de '.$cuentalineas.'. Ocurrieron '.$errores.' errores</div>';
@@ -134,7 +137,8 @@ $cadena.=$mensaje.'<div class="c100 agc ber bff bfz card" id="tabla_leads">
                 <thead>
                     <tr>
                         <th class="tleads">Num. Servicio</th>
-                        <th class="tleads">Sucursal</th>
+                        <th class="tleads">Num. Sucursal</th>
+                        <th class="tleads">Nombre Sucursal</th>
                         <th class="tleads">Tecnico</th>
                         <th class="tleads">Fecha Asignación</th>
                         <th class="tleads">Semana Atención</th>
@@ -144,7 +148,7 @@ $cadena.=$mensaje.'<div class="c100 agc ber bff bfz card" id="tabla_leads">
                         <th class="tleads">Reporte</th>
                 </thead>
                 <tbody>';
-$ResServicios = mysqli_query($conn, "SELECT s.Id, su.Nombre AS NombreSucursal, u.Nombre AS NombreTecnico, 
+$ResServicios = mysqli_query($conn, "SELECT s.Id, su.NumSucursal AS NumSucursal, su.Nombre AS NombreSucursal, u.Nombre AS NombreTecnico, 
                                             s.FechaAsignacion, s.SemanaAtencion, s.FechaAtencion, ce.Estatus, ce.Color, 
                                             s.InicioServicio, s.FinServicio
                                     FROM servicios AS s
@@ -178,6 +182,7 @@ while($RResS=mysqli_fetch_array($ResServicios))
 
     $cadena.='      <tr>
                         <td align="center">'.(permisos($_SESSION["perfil"], 'edit.servicio') ? '<a href="javascript:void(0)" onclick="editar_servicio(\''.$RResS["Id"].'\')">'.$RResS["Id"].'</a>' : $RResS["Id"]).'</td>
+                        <td>'.$RResS["NumSucursal"].'</td>
                         <td>'.$RResS["NombreSucursal"].'</td>
                         <td>'.$RResS["NombreTecnico"].'</td>
                         <td>'.($RResS["FechaAsignacion"]>0 ? date("d/m/Y H:i:s", $RResS["FechaAsignacion"]) : '').'</td>    

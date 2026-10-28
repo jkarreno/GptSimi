@@ -82,7 +82,7 @@ if(isset($_POST["hacer"]))
 
                 $linea = str_getcsv($linea, "|");
             
-                $ResEstado = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM cat_estados WHERE Estado = '".strtoupper($linea[4])."'"));
+                $ResEstado = mysqli_fetch_array(mysqli_query($conn, "SELECT Id FROM cat_estados WHERE Estado = '".strtoupper(utf8_decode($linea[4]))."'"));
 
                 //comprueba si ya existe la sucursal
                 $ResSucursal = mysqli_query($conn, "SELECT * FROM sucursales WHERE NumSucursal = '".$linea[0]."'");
