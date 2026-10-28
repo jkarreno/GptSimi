@@ -1,4 +1,10 @@
 <?php
+
+//Inicio la sesion 
+$tiempoSesion = 3 * 60 * 60;
+ini_set('session.gc_maxlifetime', $tiempoSesion);
+ini_set('session.cookie_lifetime', $tiempoSesion);
+
 session_start();
 
 include ("../conexion.php");

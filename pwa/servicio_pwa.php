@@ -1,8 +1,11 @@
 <?php 
 date_default_timezone_set('America/Mexico_City');
+
 //Inicio la sesion 
-//ini_set("session.cookie_lifetime","7200");
-//ini_set("session.gc_maxlifetime","7200");
+$tiempoSesion = 3 * 60 * 60;
+ini_set('session.gc_maxlifetime', $tiempoSesion);
+ini_set('session.cookie_lifetime', $tiempoSesion);
+
 session_start();
 //COMPRUEBA QUE EL USUARIO ESTA AUTENTIFICADO 
 if ($_SESSION["autentificado"] != "SI") { 
@@ -16,6 +19,11 @@ include ("../conexion.php");
 include ("../funciones.php");
 
 $mensaje= '';
+
+if(isset($_GET["guardadoc"]) AND $_GET["guardadoc"]==1)
+{
+    $mensaje = '<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el archivo correctamente</div>';
+}
 
 if(isset($_GET["hacer"]))
 {
@@ -39,8 +47,10 @@ if(isset($_POST["hacer"]))
             mysqli_query($conn, "INSERT INTO servicios_capturas (Fecha, IdServicio, IdTecnico, IdCaptura, Archivo, Estatus)
                                                         VALUES ('".time()."', '".$_POST["id"]."', '".$_SESSION["Id"]."', '".$_POST["tipoimagen"]."', 
                                                                 '".$nombrearchivo."', 'Validar')");
+                                                        
+            header("Location: servicio_pwa.php?guardadoc=1&id=".$_POST["id"]);
                                                                 
-            $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el archivo correctamente</div>';
+            //$mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Se agrego el archivo correctamente</div>';
         } else {
             //echo "Error al subir el archivo.";
             $mensaje='<div class="mesaje" id="mesaje"><i class="fas fa-thumbs-up"></i> Error al agregar el archivo</div>';

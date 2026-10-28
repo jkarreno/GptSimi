@@ -1,8 +1,11 @@
 <?php 
 date_default_timezone_set('America/Mexico_City');
+
 //Inicio la sesion 
-//ini_set("session.cookie_lifetime","7200");
-//ini_set("session.gc_maxlifetime","7200");
+$tiempoSesion = 3 * 60 * 60;
+ini_set('session.gc_maxlifetime', $tiempoSesion);
+ini_set('session.cookie_lifetime', $tiempoSesion);
+
 session_start();
 //COMPRUEBA QUE EL USUARIO ESTA AUTENTIFICADO 
 if ($_SESSION["autentificado"] != "SI") { 
