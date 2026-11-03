@@ -36,7 +36,7 @@ $cadena=$mensaje.'<div class="c100 agc akr ber bff bfz" style="display: flex; fl
 
                     <div class="c30">
                         <label class="l_form">Corte de Pago</label>
-                        <input type="text" name="corte" id="corte" value="" disabled>
+                        <input type="text" name="corte" id="corte" value="">
                     </div>
                     <div class="c30">
                         <label class="l_form">Zona</label>
@@ -49,7 +49,7 @@ $cadena=$mensaje.'<div class="c100 agc akr ber bff bfz" style="display: flex; fl
 $ResEstados =mysqli_query($conn, "SELECT * FROM cat_estados ORDER BY Estado ASC");
 while($RResEstados = mysqli_fetch_array($ResEstados))
 {
-    $cadena.='              <option value="'.$RResEstados["Id"].'">'.$RResEstados["Estado"].'</option>';
+    $cadena.='              <option value="'.$RResEstados["Id"].'"'.(isset($_POST['estado']) && $_POST['estado'] == $RResEstados["Id"] ? ' selected' : '').'>'.$RResEstados["Estado"].'</option>';
 }
 $cadena.='              </select>
                     </div>
@@ -60,7 +60,7 @@ $cadena.='              </select>
 $ResCoordinadores =mysqli_query($conn, "SELECT * FROM usuarios WHERE Perfil = 3 ORDER BY Nombre ASC");
 while($RResCoordinadores = mysqli_fetch_array($ResCoordinadores))
 {
-    $cadena.='              <option value="'.$RResCoordinadores["Id"].'">'.$RResCoordinadores["Nombre"].'</option>';
+    $cadena.='              <option value="'.$RResCoordinadores["Id"].'"'.(isset($_POST['coordinador']) && $_POST['coordinador'] == $RResCoordinadores["Id"] ? ' selected' : '').'>'.$RResCoordinadores["Nombre"].'</option>';
 }
 $cadena.='              </select>
                     </div>
@@ -93,8 +93,8 @@ $ResCorteDía = mysqli_query($conn, "SELECT s.Id, s.EstatusPago, s.Pago, s.FinSe
                                     WHERE s.FinServicio IS NOT NULL
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) >= UNIX_TIMESTAMP('".$fechadesde." 00:00:00')
                                     AND CAST(SUBSTRING_INDEX(s.FinServicio, '|', 1) AS UNSIGNED) <= UNIX_TIMESTAMP('".$fechahasta." 23:59:59')
-                                    AND ".($estado>0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
-                                    AND ".($coordinador>0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")) or die(mysqli_error($conn));
+                                    AND ".($estado!=0 ? "su.Estado = '".$estado."'" : "(su.Estado LIKE '%' OR su.Estado IS NULL)")."
+                                    AND ".($coordinador!=0 ? "c.Id = '".$coordinador."'" : "(c.Id LIKE '%' OR c.Id IS NULL)")) or die(mysqli_error($conn));
 $totalPago = 0;
 $NumRegistros = mysqli_num_rows($ResCorteDía);
 while($RResCD=mysqli_fetch_array($ResCorteDía))
@@ -226,10 +226,11 @@ function generar_reporte()
 {
     var fechadesde = $("#fechaconsultadesde").val();
     var fechahasta = $("#fechaconsultahasta").val();
+    var corte = $("#corte").val();
     var estado = $("#estado").val();
     var coordinador = $("#coordinador").val();
 
-    window.open("reportes/reporte_pago.php?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta + "&estado=" + estado + "&coordinador=" + coordinador, "_blank");
+    window.open("reportes/reporte_pago.php?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta + "&corte=" + corte + "&estado=" + estado + "&coordinador=" + coordinador, "_blank");
 }
 
 function calcularTotal() {
