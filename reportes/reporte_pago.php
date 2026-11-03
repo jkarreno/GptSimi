@@ -132,7 +132,7 @@ $pdf->Cell(20,10,'CORTE DE PAGO: ',0,0,'L');
 $pdf->SetY(40);
 $pdf->SetX(53);
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(20,10,'',1,0,'L');
+$pdf->Cell(20,10,$_GET["corte"],1,0,'L');
 //
 $pdf->SetY(40);
 $pdf->SetX(80);
@@ -204,6 +204,7 @@ $pdf->Cell(30,10,'PAGO',1,0,'C',1);
 $pdf->SetX(174);
 $pdf->Cell(30,10,'Status Pago',1,0,'C',1);
 
+$NumeroFila = 1; $NumRegistros = mysqli_num_rows($ResCorteDía); 
 while($RResCD=mysqli_fetch_array($ResCorteDía))
 {
     $pdf->SetY($pdf->GetY() + 10);
@@ -220,6 +221,141 @@ while($RResCD=mysqli_fetch_array($ResCorteDía))
     $pdf->Cell(30,10,'$ '.($RResCD["Pago"]>0 && $RResCD["Pago"]!==null ? number_format($RResCD["Pago"], 2) : '0.00'),1,0,'R',1);
     $pdf->SetX(174);
     $pdf->Cell(30,10,$RResCD["EstatusPago"],1,0,'C',1);
+    
+    $NumeroFila++;
+
+    if($NumeroFila == 20)
+    {
+        $pdf->AddPage();
+        $NumeroFila = 1;
+
+        $pdf->SetFillColor(204,204,204);
+$pdf->SetY(10);
+$pdf->SetX(10);
+$pdf->SetFont('Arial','',8);
+$pdf->MultiCell(190,45,'',0,'C',1);
+//titulo
+$pdf->SetY(12);
+$pdf->SetX(12);
+$pdf->SetFont('Arial','',16);
+$pdf->Cell(90,10,utf8_decode('CONSULTORIOS CONCLUIDOS'),0,0,'L');
+//
+$pdf->SetY(20);
+$pdf->SetX(100);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(90,10,'Total:',0,0,'L');
+//
+$pdf->SetY(20);
+$pdf->SetX(113);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(90,10,$totalconsultorios,0,0,'L');
+//
+$pdf->SetY(20);
+$pdf->SetX(105);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(90,10,utf8_decode($dia).', '.fecha($fecha),0,0,'R');
+//
+$pdf->SetY(30);
+$pdf->SetX(100);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(90,10,'Monto:',0,0,'L');
+//
+//if(permisos($_SESSION["perfil"], 'ver.pago'))
+//{
+    $pdf->SetY(30);
+    $pdf->SetX(115);
+    $pdf->SetFont('Arial','',12);
+    $pdf->Cell(90,10,'$ '.($ResTotalPago["TotalPago"]>0 && $ResTotalPago["TotalPago"]!==null ? number_format($ResTotalPago["TotalPago"], 2) : '0.00'),0,0,'L');
+//}
+
+//
+$pdf->SetY(30);
+$pdf->SetX(105);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(90,10,date('h:i:s a', time()),0,0,'R');
+//
+$pdf->SetY(40);
+$pdf->SetX(12);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(20,10,'CORTE DE PAGO: ',0,0,'L');
+//
+$pdf->SetY(40);
+$pdf->SetX(53);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(20,10,$_GET["corte"],1,0,'L');
+//
+$pdf->SetY(40);
+$pdf->SetX(80);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(20,10,'Zona: ',0,0,'L');
+//
+$pdf->SetY(40);
+$pdf->SetX(95);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(20,10,'5',0,0,'L');
+//
+$pdf->SetY(58);
+$pdf->SetX(12);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(30,10,'ESTADO: ',0,0,'R');
+//
+$pdf->SetY(58);
+$pdf->SetX(40);
+$pdf->SetFillColor(204,204,204);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(60,10,$NombreEstado,0,0,'C',1);
+//
+$pdf->SetY(70);
+$pdf->SetX(12);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(30,10,'Coordinador: ',0,0,'R');
+//
+$pdf->SetY(70);
+$pdf->SetX(40);
+$pdf->SetFillColor(204,204,204);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(60,10,$NombreCoordinador,0,0,'C',1);
+//
+$pdf->SetY(70);
+$pdf->SetX(90);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(30,10,'Total: ',0,0,'R');
+//
+$pdf->SetY(70);
+$pdf->SetX(120);
+$pdf->SetFillColor(204,204,204);
+$pdf->SetFont('Arial','',12);
+$pdf->Cell(10,10,$totalconsultorios,0,0,'R',1);
+//
+$pdf->SetY(70);
+$pdf->SetX(120);
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(30,10,'Monto: ',0,0,'R');
+//
+$pdf->SetY(70);
+$pdf->SetX(150);
+$pdf->SetFillColor(204,204,204);
+$pdf->SetFont('Arial','',12);   
+$pdf->Cell(50,10,'$ '.($ResTotalPago["TotalPago"]>0 && $ResTotalPago["TotalPago"]!==null ? number_format($ResTotalPago["TotalPago"], 2) : '0.00'),0,0,'R',1);
+//
+
+        //encabezados
+        $pdf->SetY(85);
+        $pdf->SetX(4);
+        $pdf->SetFillColor(204,204,204);
+        $pdf->SetDrawColor(000,000,000);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(30,10,'No. Consultorio',1,0,'C',1);
+        $pdf->SetX(34);
+        $pdf->Cell(80,10,'Nombre de consultorio',1,0,'C',1);
+        $pdf->SetX(114);
+        $pdf->Cell(30,10,utf8_decode('Fecha Atención'),1,0,'C',1);
+        $pdf->SetX(144);
+        $pdf->Cell(30,10,'PAGO',1,0,'C',1);
+        $pdf->SetX(174);
+        $pdf->Cell(30,10,'Status Pago',1,0,'C',1);
+    }
+
 }
 
 $pdf->Output(); 
