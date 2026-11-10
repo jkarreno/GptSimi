@@ -142,7 +142,7 @@ $pdf->Cell(20,10,'Zona: ',0,0,'L');
 $pdf->SetY(40);
 $pdf->SetX(95);
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(20,10,'5',0,0,'L');
+$pdf->Cell(20,10,$_GET["zona"],0,0,'L');
 //
 $pdf->SetY(58);
 $pdf->SetX(12);

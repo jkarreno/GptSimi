@@ -36,11 +36,11 @@ $cadena=$mensaje.'<div class="c100 agc akr ber bff bfz" style="display: flex; fl
 
                     <div class="c30">
                         <label class="l_form">Corte de Pago</label>
-                        <input type="text" name="corte" id="corte" value="">
+                        <input type="text" name="corte" id="corte" value="'.(isset($_POST['corte']) ? $_POST['corte'] : '').'" >
                     </div>
                     <div class="c30">
                         <label class="l_form">Zona</label>
-                        <input type="text" name="zona" id="zona" value="" disabled>
+                        <input type="text" name="zona" id="zona" value="'.(isset($_POST['zona']) ? $_POST['zona'] : '').'" >
                     </div>
                     <div class="c30"></i>
                         <label class="l_form">Estado</label>
@@ -211,11 +211,13 @@ function consultar_reporte()
     var fechahasta = $("#fechaconsultahasta").val();
     var estado = $("#estado").val();
     var coordinador = $("#coordinador").val();
+    var corte = $("#corte").val();
+    var zona = $("#zona").val();
 
     $.ajax({
         type: "POST",
         url: "reportes/reportes.php",
-        data: {fechadesde: fechadesde, fechahasta: fechahasta, estado: estado, coordinador: coordinador},
+        data: {fechadesde: fechadesde, fechahasta: fechahasta, estado: estado, coordinador: coordinador, corte: corte, zona: zona},
         success: function(data) {
             $("#contenido").html(data);
         }
@@ -227,10 +229,11 @@ function generar_reporte()
     var fechadesde = $("#fechaconsultadesde").val();
     var fechahasta = $("#fechaconsultahasta").val();
     var corte = $("#corte").val();
+    var zona = $("#zona").val();
     var estado = $("#estado").val();
     var coordinador = $("#coordinador").val();
 
-    window.open("reportes/reporte_pago.php?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta + "&corte=" + corte + "&estado=" + estado + "&coordinador=" + coordinador, "_blank");
+    window.open("reportes/reporte_pago.php?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta + "&corte=" + corte + "&zona=" + zona + "&estado=" + estado + "&coordinador=" + coordinador, "_blank");
 }
 
 function calcularTotal() {
