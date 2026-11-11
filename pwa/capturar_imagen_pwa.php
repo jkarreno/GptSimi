@@ -13,7 +13,7 @@ else{$preview='';}
 $cadena='<form name="fimgev" id="fimgev" enctype="multipart/form-data" style="width: 100%;" method="post" action="servicio_pwa.php?id='.$_POST["id"].'">
             <div class="c100">
                 '.$documento.'
-                <input type="file" id="imageInput" name="imageInput" accept="image/*">
+                <input type="file" id="imageInput" name="imageInput" accept="image/*,application/pdf">
                 <button type="button" class="w-full h-12 bg-primary text-on-primary rounded-lg font-label-bold flex items-center justify-center gap-sm hover:opacity-90 transition-opacity active:scale-[0.98]" id="cameraButton" class="boton">Abrir Cámara</button>
                 <button type="button" class="w-full h-12 bg-primary text-on-primary rounded-lg font-label-bold flex items-center justify-center gap-sm hover:opacity-90 transition-opacity active:scale-[0.98]" id="captureButton" class="boton" style="display: none;">Capturar Imagen</button>
             </div>
@@ -68,14 +68,29 @@ $(document).ready(function(){
     var canvas = document.getElementById('canvas'); 
     var preview = $('#preview'); 
 
-    $('#imageInput').change(function(event){ 
-        var reader = new FileReader(); 
-        reader.onload = function(){ 
-            var img = $('<img>').attr('src', reader.result); 
-            preview.html(img); 
-        } 
-        reader.readAsDataURL(event.target.files[0]); 
-    }); 
+    $('#imageInput').change(function(event){
+
+        var archivo = event.target.files[0];
+    
+        if (!archivo) return;
+    
+        // Si es PDF, mostrar su nombre
+        if (archivo.type === 'application/pdf') {
+            preview.html('<p>📄 ' + archivo.name + '</p>');
+            return;
+        }
+    
+        // Si es imagen, conservar exactamente el comportamiento actual
+        var reader = new FileReader();
+    
+        reader.onload = function(){
+            var img = $('<img>').attr('src', reader.result);
+            preview.html(img);
+        }
+    
+        reader.readAsDataURL(archivo);
+
+    });
 
     $('#cameraButton').click(function(){ 
         navigator.mediaDevices.getUserMedia({ 

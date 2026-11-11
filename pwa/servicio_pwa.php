@@ -39,8 +39,12 @@ if(isset($_POST["hacer"]))
 {
     if($_POST["hacer"]=='guardadoc')
     {
-        $nombrearchivo = $_POST["id"].'_'.$_POST["tipoimagen"].'.jpg';
+        $tipo = mime_content_type($_FILES['imageInput']['tmp_name']);
+        if (strpos($tipo, 'image/') === 0) { $nombrearchivo = $_POST["id"].'_'.$_POST["tipoimagen"].'.jpg'; }
+        elseif ($tipo === 'application/pdf') { $nombrearchivo = $_POST["id"].'_'.$_POST["tipoimagen"].'.pdf'; }
+
         $rutaarchivo = 'files/'.$nombrearchivo;
+        
 
         if (move_uploaded_file($_FILES['imageInput']['tmp_name'], $rutaarchivo)) {
             //guarda en database
@@ -259,7 +263,7 @@ if($ResServicio["InicioServicio"] != NULL)
             $J=0; $T=0;
             while($RResI = mysqli_fetch_array($ResImagenes))
             {
-                if(file_exists('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg'))
+                if(file_exists('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg') OR file_exists('files/'.$_GET["id"].'_'.$RResI["Id"].'.pdf'))
                 {
                     $J++;
                     $ResImg = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM servicios_capturas WHERE IdServicio='".$_GET["id"]."' AND IdCaptura = '".$RResI["Id"]."' ORDER BY Fecha DESC LIMIT 1"));
@@ -270,14 +274,17 @@ if($ResServicio["InicioServicio"] != NULL)
                         case 'Rechazada': $color = 'style="color: #ba1a1a"'; break;
                         case 'Autorizada': $color = 'style="color: #61b15f"'; $T++; break;
                     }
+
+                    $extension = strtolower(substr($ResImg["Archivo"], -3));
+
                     echo '<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant rounded-lg">
                             <div class="flex items-center gap-sm">
                                 <div class="w-12 h-12 bg-surface-container-highest rounded overflow-hidden">
-                                    <img src="files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg?'.rand(1,100).'" alt="Thumbnail" class="w-full h-full object-cover">
+                                    <img src="'.($extension == 'jpg' ? 'files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg?'.rand(1,100) : 'images/pdf_icon.png').'" alt="Thumbnail" class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-label-bold font-label-bold text-on-surface">'.$RResI["Nombre"].'</span>
-                                    <span class="text-label-sm text-on-surface-variant">'.date("d/m/Y H:i:s", filemtime('files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg')).'</span>
+                                    <span class="text-label-sm text-on-surface-variant">'.date("d/m/Y H:i:s", filemtime(($extension == 'jpg' ? 'files/'.$_GET["id"].'_'.$RResI["Id"].'.jpg' : 'files/'.$_GET["id"].'_'.$RResI["Id"].'.pdf'))).'</span>
                                     <span class="text-label-sm text-on-surface-variant" '.$color.'>'.$ResImg["Estatus"].'</span>
                                     '.($ResImg["Estatus"]=='Rechazada' ? '<span class="text-label-sm text-on-surface-variant">'.$ResImg["Comentarios"].'</span>' : '').'
                                 </div>
