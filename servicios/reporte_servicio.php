@@ -20,8 +20,14 @@ $fechaatencion = fecha(date("Y-m-d", $inisios[0]));
 
 require('fpdf/fpdf.php');
 
+// Cargar clases de FPDI
+require_once('FPDI/src/autoload.php');
+
+use setasign\Fpdi\Fpdi;
+
 //crear el nuevo archivo pdf
-$pdf=new FPDF();
+//$pdf=new FPDF();
+$pdf = new Fpdi();
 
 $pdf->SetAutoPageBreak(false);
 
@@ -86,7 +92,7 @@ $pdf->Cell(90,4,utf8_decode($ResServicio["Observaciones"]),0,0,'L');
 
 $Y = $pdf->GetY() + 10;
 
-$ResImages = mysqli_query($conn, "SELECT * FROM cat_imagenes WHERE Orden < (SELECT MAX(Orden) FROM cat_imagenes) ORDER BY Orden ASC");
+$ResImages = mysqli_query($conn, "SELECT * FROM cat_imagenes WHERE Orden < (SELECT MAX(Orden) FROM cat_imagenes) AND Id != 8 ORDER BY Orden ASC");
 
 $imgsReporte = array(); $nombreImagenes = array();
 
@@ -120,6 +126,11 @@ foreach($imgsReporte as $img)
 {
     if($i == 1)
     {
+//        $archivo = $imgsReporte[$j];
+//
+//echo mime_content_type($archivo);
+//exit;    
+
         $pdf->SetY($Y);
         $pdf->SetX(20);
         $pdf->SetFont('Arial','B',12);
@@ -142,25 +153,56 @@ foreach($imgsReporte as $img)
 }
 
 //Agregamos la segunda pagina
-$pdf->AddPage();
 
-$pdf->SetFillColor(255,255,255);
-$pdf->SetDrawColor(056,063,205);
-$pdf->SetY(10);
-$pdf->SetX(10);
-$pdf->SetFont('Arial','',8);
-$pdf->SetLineWidth(1.2);
-$pdf->MultiCell(190,280,'',1,'C',1);
+$ResHS = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM servicios_capturas WHERE IdServicio = '" . $ResServicio["Id"] . "' AND IdCaptura = 8 ORDER BY Id DESC LIMIT 1"));
 
-//titulo
-$pdf->SetY(20);
-$pdf->SetX(70);
-$pdf->SetFont('Arial','B',18);
-$pdf->Cell(90,10,utf8_decode('Hoja de servicio'),0,0,'C');
+$extension = strtolower(substr($ResHS["Archivo"], -3));
 
-$ResHS = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM cat_imagenes ORDER BY Orden DESC LIMIT 1"));
+if($extension == 'jpg')
+{
+    $pdf->AddPage();
 
-$pdf->Image('../pwa/files/'.$ResServicio["Id"].'_'.$ResHS["Id"].'.jpg', 15, 30, 180, 255);
+    $pdf->SetFillColor(255,255,255);
+    $pdf->SetDrawColor(056,063,205);
+    $pdf->SetY(10);
+    $pdf->SetX(10);
+    $pdf->SetFont('Arial','',8);
+    $pdf->SetLineWidth(1.2);
+    $pdf->MultiCell(190,280,'',1,'C',1);
+
+    //titulo
+    $pdf->SetY(20);
+    $pdf->SetX(70);
+    $pdf->SetFont('Arial','B',18);
+    $pdf->Cell(90,10,utf8_decode('Hoja de servicio'),0,0,'C');
+
+    $pdf->Image('../pwa/files/'.$ResServicio["Id"].'_'.$ResHS["IdCaptura"].'.jpg', 15, 30, 180, 255);
+}
+
+else
+
+{
+    $archivo = '../pwa/files/'.$ResServicio["Id"].'_'.$ResHS["IdCaptura"].'.pdf';
+
+    $totalPaginas = $pdf->setSourceFile($archivo);
+
+    for ($i = 1; $i <= $totalPaginas; $i++) {
+
+        $pagina = $pdf->importPage($i);
+
+        $medidas = $pdf->getTemplateSize($pagina);
+
+        $pdf->AddPage(
+            $medidas['orientation'],
+            [$medidas['width'], $medidas['height']]
+        );
+
+        $pdf->useTemplate($pagina);
+    }
+}
+
+
+
 
 
 $pdf->Output(); 
