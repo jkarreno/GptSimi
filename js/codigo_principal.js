@@ -50,7 +50,7 @@ function dashboard(){
 
     moduloActual = 'dashboard';
 
-    // Añadimos la imagen de carga en el contenedor contenido
+    // Añadimos la imagen de carga en el contenedor div contenido
     $('#contenido').html('<div class="loading"><img src="/images/loading-forever.gif" alt="loading" width="60px" /></div>');
 
     $.ajax({
