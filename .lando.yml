@@ -13,7 +13,7 @@ services:
     sslExpose: true
     
   database:
-    portforward: 3306
+    portforward: 3307
 
 proxy:
   appserver:
