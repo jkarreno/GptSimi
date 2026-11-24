@@ -1,6 +1,9 @@
 //definimos el modal
 var modal = document.getElementById('myModal');
 
+let intervaloDashboard = null;
+let moduloActual = '';
+
 function limpiar(){
     document.getElementById("modal-body").innerHTML="";
 }
@@ -44,15 +47,39 @@ function servicios(){
 }
 
 function dashboard(){
-	//Añadimos la imagen de carga en el contenedor
-	$('#contenido').html('<div class="loading"><img src="/images/loading-forever.gif" alt="loading" width="60px" /></div>');
 
-	$.ajax({
-				type: 'POST',
-				url : 'dashboard/dashboard.php'
-	}).done (function ( info ){
-		$('#contenido').html(info);
-	});
+    moduloActual = 'dashboard';
+
+    // Añadimos la imagen de carga en el contenedor
+    $('#contenido').html('<div class="loading"><img src="/images/loading-forever.gif" alt="loading" width="60px" /></div>');
+
+    $.ajax({
+        type: 'POST',
+        url : 'dashboard/dashboard.php'
+    }).done(function(info){
+        $('#contenido').html(info);
+    });
+
+    // Evitamos duplicar el temporizador
+    if (intervaloDashboard !== null) {
+        clearInterval(intervaloDashboard);
+    }
+
+    // Actualizamos cada minuto
+    intervaloDashboard = setInterval(function(){
+
+        if (moduloActual === 'dashboard') {
+
+            $.ajax({
+                type: 'POST',
+                url : 'dashboard/dashboard.php'
+            }).done(function(info){
+                $('#contenido').html(info);
+            });
+
+        }
+
+    }, 60000);
 }
 
 function reportes(){
